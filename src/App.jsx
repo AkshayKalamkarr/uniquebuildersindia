@@ -5,6 +5,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Director from "./components/Director"
 import ProjectDetails from "./pages/ProjectDetails";
+import OurImpact from './pages/OurImpact'
 import { projects } from "./data/projects";
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
         <Route path="/our-story" element={<OurStory />} />
         <Route path="/director" element={<Director />} />
         <Route path="/projects/:slug" element={<ProjectDetails />} />
+        <Route path="/our-impact" element={<OurImpact />} />
       </Routes>
 
       {/* ✅ FOOTER */}

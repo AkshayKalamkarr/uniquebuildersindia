@@ -1,68 +1,72 @@
 export const projects = [
     {
-        slug: "ulwe",
+        slug: "project-1",
         name: "New City Palace",
-        location: "Ulwe, Navi Mumbai",
+        location: "Pushpak Nagar, Navi Mumbai",
 
-        coverImage: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+        coverImage: "/images/newcitypalace413/1.jpeg",
 
         images: [
-            "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d",
-            "https://images.unsplash.com/photo-1600585154084-4e5fe7c39198",
-            "https://images.unsplash.com/photo-1600607687644-c7f34b5063d3",
-            "https://images.unsplash.com/photo-1600573472550-8090b5e0745e",
+            "/images/newcitypalace413/2.jpeg",
+            "/images/newcitypalace413/4.jpeg",
+            "/images/newcitypalace413/5.jpg",
+            "/images/newcitypalace413/6.jpg",
+            "/images/newcitypalace413/7.jpg",
+            "/images/newcitypalace413/8.jpg",
         ],
 
         videos: [
-            "https://www.w3schools.com/html/mov_bbb.mp4",
-            "https://www.w3schools.com/html/movie.mp4",
-            "https://samplelib.com/lib/preview/mp4/sample-5s.mp4",
+            "/images/newcitypalace413/newCity-1.mp4",
+            "/images/newcitypalace413/newCity-2.mp4",
+            "/images/newcitypalace413/newCity-3.mp4",
         ],
 
         description: "Luxury villas with modern amenities and lush green surroundings.",
+
+        mapEmbedUrl: "https://www.google.com/maps?q=Pushpak%20Nagar%20Navi%20Mumbai&output=embed"
     },
 
     {
-        slug: "pushpaknagar",
-        name: "Unique Heights",
+        slug: "project-2",
+        name: "Gajanan Enclave",
         location: "Pushpak Nagar, Navi Mumbai",
 
-        coverImage: "https://images.unsplash.com/photo-1568605114967-8130f3a36994",
+        coverImage: "/images/gajananenclave357/1.jpg",
 
         images: [
-            "https://images.unsplash.com/photo-1570129477492-45c003edd2be",
-            "https://images.unsplash.com/photo-1599423300746-b62533397364",
-            "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde",
-            "https://images.unsplash.com/photo-1600566752227-8f3b6c07d3b1",
+            "/images/gajananenclave357/1.jpg",
+            "/images/gajananenclave357/2.jpg",
+            "/images/gajananenclave357/3.jpg",
+            "/images/gajananenclave357/4.jpg",
+            "/images/gajananenclave357/5.jpg",
+            "/images/gajananenclave357/6.jpg",
         ],
 
         videos: [
-            "https://samplelib.com/lib/preview/mp4/sample-10s.mp4",
-            "https://samplelib.com/lib/preview/mp4/sample-15s.mp4",
-            "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
+            "/images/gajananenclave357/gajananEnclave-1.mp4",
+            "/images/gajananenclave357/gajananEnclave-2.mp4",
+            "/images/gajananenclave357/gajananEnclave-3.mp4",
         ],
 
         description: "Premium apartments designed for urban lifestyle and comfort.",
     },
 
     {
-        slug: "kharghar",
-        name: "Elite Residency",
+        slug: "project-3",
+        name: "Unique Palacio",
         location: "Kharghar, Navi Mumbai",
 
         coverImage: "https://images.unsplash.com/photo-1600047508788-786f5e0ed1f5",
 
         images: [
-            "https://images.unsplash.com/photo-1600607688969-a5bfcd646154",
-            "https://images.unsplash.com/photo-1600585152220-90363fe7e115",
-            "https://images.unsplash.com/photo-1600047509358-9dc75507daeb",
-            "https://images.unsplash.com/photo-1600607687645-6fe1b2b4c4a4",
+            "/images/uniquepalacio24/1.jpg",
         ],
 
         videos: [
-            "https://www.w3schools.com/html/mov_bbb.mp4",
-            "https://samplelib.com/lib/preview/mp4/sample-30s.mp4",
-            "https://samplelib.com/lib/preview/mp4/sample-5mb.mp4",
+            "/images/uniquepalacio24/1.mp4",
+            "/images/uniquepalacio24/1.mp4",
+            "/images/uniquepalacio24/1.mp4",
+
         ],
 
         description: "Spacious homes with scenic hill views and world-class facilities.",

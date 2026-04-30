@@ -11,6 +11,7 @@ const ProjectDetails = () => {
     const [lightbox, setLightbox] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
     const [visibleSections, setVisibleSections] = useState(new Set());
+    const [mapLoaded, setMapLoaded] = useState(false);
     const sectionRefs = useRef([]);
 
     useEffect(() => {
@@ -35,7 +36,7 @@ const ProjectDetails = () => {
                     }
                 });
             },
-            { threshold: 0.1 }
+            { threshold: 0.06 }
         );
         sectionRefs.current.forEach((ref) => ref && observer.observe(ref));
         return () => observer.disconnect();
@@ -45,11 +46,11 @@ const ProjectDetails = () => {
 
     if (!project) {
         return (
-            <div className="min-h-screen bg-[#faf9f7] flex items-center justify-center">
+            <div className="min-h-screen bg-[#faf9f6] flex items-center justify-center">
                 <div className="text-center">
-                    <p className="text-8xl font-light text-[#b8a88a] mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>404</p>
-                    <p className="text-[#999] tracking-[0.3em] text-xs uppercase mb-8">Project not found</p>
-                    <button onClick={() => navigate(-1)} className="px-10 py-3.5 bg-[#1a1a1a] text-white text-xs tracking-[0.25em] uppercase hover:bg-[#b8a88a] transition-all duration-500">
+                    <p className="text-9xl font-extralight text-[#b8924a]/20 mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>404</p>
+                    <p className="text-[#aaa] tracking-[0.4em] text-[10px] uppercase mb-8">Project not found</p>
+                    <button onClick={() => navigate(-1)} className="px-10 py-3.5 border border-[#b8924a]/40 text-[#b8924a] text-[10px] tracking-[0.3em] uppercase hover:bg-[#b8924a] hover:text-white transition-all duration-500">
                         Return
                     </button>
                 </div>
@@ -58,239 +59,434 @@ const ProjectDetails = () => {
     }
 
     return (
-        <div className="bg-[#faf9f7] text-[#1a1a1a] overflow-x-hidden" style={{ fontFamily: "'Jost', sans-serif" }}>
+        <div className="bg-white text-[#1a1a1a] overflow-x-hidden" style={{ fontFamily: "'DM Sans', sans-serif" }}>
 
-            {/* ── FONTS & GLOBAL STYLES ── */}
             <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Sans:wght@200;300;400;500&display=swap');
 
-        .playfair { font-family: 'Playfair Display', serif; }
+        .cormorant { font-family: 'Cormorant Garamond', serif; }
 
-        @keyframes heroReveal {
-          from { opacity: 0; transform: scale(1.08); }
-          to   { opacity: 1; transform: scale(1); }
+        /* ── Animations ── */
+        @keyframes slideUp   { from{opacity:0;transform:translateY(44px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes slideLeft { from{opacity:0;transform:translateX(36px)} to{opacity:1;transform:translateX(0)} }
+        @keyframes fadeIn    { from{opacity:0} to{opacity:1} }
+        @keyframes pulseRing { 0%{box-shadow:0 0 0 0 rgba(184,146,74,.4)} 70%{box-shadow:0 0 0 18px rgba(184,146,74,0)} 100%{box-shadow:0 0 0 0 rgba(184,146,74,0)} }
+        @keyframes floatAnim { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
+        @keyframes shimmer   { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+        @keyframes mapReveal { from{opacity:0;transform:scale(0.97) translateY(24px)} to{opacity:1;transform:scale(1) translateY(0)} }
+        @keyframes borderPulse { 0%,100%{border-color:rgba(184,146,74,.18)} 50%{border-color:rgba(184,146,74,.55)} }
+        @keyframes pinBounce { 0%,100%{transform:translateY(0) scale(1)} 40%{transform:translateY(-8px) scale(1.15)} 60%{transform:translateY(-4px) scale(1.08)} }
+        @keyframes scanLine  { 0%{top:0%} 100%{top:100%} }
+        @keyframes glowPulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+
+        .reveal   { opacity:0 }
+        .reveal.visible   { animation:slideUp  .9s cubic-bezier(.16,1,.3,1) forwards }
+        .reveal-l { opacity:0 }
+        .reveal-l.visible { animation:slideLeft .9s cubic-bezier(.16,1,.3,1) forwards }
+        .reveal-f { opacity:0 }
+        .reveal-f.visible { animation:fadeIn 1.1s ease forwards }
+
+        .d1{animation-delay:.04s} .d2{animation-delay:.12s} .d3{animation-delay:.20s}
+        .d4{animation-delay:.28s} .d5{animation-delay:.36s} .d6{animation-delay:.44s}
+        .d7{animation-delay:.52s} .d8{animation-delay:.60s}
+
+        /* ── Media cards ── */
+        .img-card { overflow:hidden; cursor:pointer; position:relative; }
+        .img-card img  { transition:transform .9s cubic-bezier(.16,1,.3,1); display:block; width:100%; height:100%; object-fit:cover; }
+        .img-card:hover img  { transform:scale(1.06); }
+
+        .vid-card { overflow:hidden; cursor:pointer; position:relative; }
+        .vid-card video { transition:transform .9s cubic-bezier(.16,1,.3,1); display:block; width:100%; height:100%; object-fit:cover; }
+        .vid-card:hover video { transform:scale(1.05); }
+
+        /* ── Portrait grid — IMAGES ── */
+        .portrait-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+          gap: 10px;
         }
-        @keyframes slideUp {
-          from { opacity: 0; transform: translateY(50px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes slideLeft {
-          from { opacity: 0; transform: translateX(40px); }
-          to   { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to   { opacity: 1; }
-        }
-        @keyframes lineGrow {
-          from { transform: scaleX(0); }
-          to   { transform: scaleX(1); }
-        }
-        @keyframes pulseRing {
-          0%   { box-shadow: 0 0 0 0 rgba(184,168,138,0.5); }
-          70%  { box-shadow: 0 0 0 14px rgba(184,168,138,0); }
-          100% { box-shadow: 0 0 0 0 rgba(184,168,138,0); }
-        }
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50%       { transform: translateY(-8px); }
-        }
+        @media(min-width:640px)  { .portrait-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; } }
+        @media(min-width:1024px) { .portrait-grid { grid-template-columns: repeat(4, 1fr); gap: 14px; } }
+        @media(min-width:1280px) { .portrait-grid { grid-template-columns: repeat(5, 1fr); gap: 14px; } }
 
-        .hero-img { animation: heroReveal 1.4s cubic-bezier(0.16,1,0.3,1) forwards; }
+        .portrait-card { aspect-ratio: 3/4; }
 
-        .reveal { opacity: 0; }
-        .reveal.visible { animation: slideUp 0.9s cubic-bezier(0.16,1,0.3,1) forwards; }
-        .reveal-left { opacity: 0; }
-        .reveal-left.visible { animation: slideLeft 0.9s cubic-bezier(0.16,1,0.3,1) forwards; }
-        .reveal-fade { opacity: 0; }
-        .reveal-fade.visible { animation: fadeIn 1s ease forwards; }
-
-        .d1 { animation-delay: 0.05s; }
-        .d2 { animation-delay: 0.15s; }
-        .d3 { animation-delay: 0.25s; }
-        .d4 { animation-delay: 0.35s; }
-        .d5 { animation-delay: 0.45s; }
-        .d6 { animation-delay: 0.55s; }
-
-        .img-card { overflow: hidden; }
-        .img-card img { transition: transform 0.9s cubic-bezier(0.16,1,0.3,1); }
-        .img-card:hover img { transform: scale(1.07); }
-
-        .vid-card { overflow: hidden; }
-        .vid-card video { transition: transform 0.9s cubic-bezier(0.16,1,0.3,1); }
-        .vid-card:hover video { transform: scale(1.05); }
-
-        .play-btn { animation: pulseRing 2.5s ease-out infinite; }
-        .scroll-float { animation: float 3s ease-in-out infinite; }
-
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-
-        .noise-bg {
-          background-color: #faf9f7;
-          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+        .portrait-featured { aspect-ratio: 3/4; grid-column: span 1; }
+        @media(min-width:640px) {
+          .portrait-featured { grid-column: span 2; grid-row: span 2; aspect-ratio: auto; }
         }
 
-        .section-line {
-          transform-origin: left;
-          animation: lineGrow 1s cubic-bezier(0.16,1,0.3,1) forwards;
+        /* ── Portrait grid — VIDEOS ── */
+        .vid-portrait-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 10px;
         }
+        @media(min-width:640px)  { .vid-portrait-grid { gap: 12px; } }
+        @media(min-width:1024px) { .vid-portrait-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; } }
 
-        .thumb-active { box-shadow: 0 0 0 2px #b8a88a; }
+        .vid-portrait-card { aspect-ratio: 9/16; }
 
+        /* ── Play button ── */
+        .play-btn { animation: pulseRing 2.8s ease-out infinite; }
+
+        /* ── Overlay ── */
+        .media-overlay {
+          position:absolute; inset:0;
+          background:linear-gradient(to top, rgba(0,0,0,.60) 0%, rgba(0,0,0,0) 55%);
+          transition:opacity .4s;
+        }
+        .img-card:hover .media-overlay,
+        .vid-card:hover .media-overlay { opacity:1; }
+
+        .overlay-expand {
+          position:absolute; inset:0;
+          display:flex; align-items:center; justify-content:center;
+          opacity:0; transition:opacity .35s;
+        }
+        .img-card:hover .overlay-expand,
+        .vid-card:hover .overlay-expand { opacity:1; }
+
+        .expand-icon {
+          width:42px; height:42px;
+          border:1px solid rgba(255,255,255,.6);
+          border-radius:50%;
+          display:flex; align-items:center; justify-content:center;
+          backdrop-filter:blur(6px);
+          background:rgba(184,146,74,.22);
+          transition:transform .3s, background .3s;
+        }
+        .img-card:hover .expand-icon,
+        .vid-card:hover .expand-icon { transform:scale(1.12); background:rgba(184,146,74,.42); }
+
+        /* ── Corner marks ── */
+        .corner-tl { position:absolute; top:10px; left:10px; width:16px; height:16px; border-top:1.5px solid rgba(255,255,255,.45); border-left:1.5px solid rgba(255,255,255,.45); pointer-events:none; z-index:2; }
+        .corner-br { position:absolute; bottom:10px; right:10px; width:16px; height:16px; border-bottom:1.5px solid rgba(255,255,255,.45); border-right:1.5px solid rgba(255,255,255,.45); pointer-events:none; z-index:2; }
+
+        /* ── Tag pill (gold outline — on light bg) ── */
         .tag-pill {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 6px 14px;
-          border: 1px solid #e5e0d8;
-          font-size: 10px;
-          letter-spacing: 0.25em;
-          text-transform: uppercase;
-          color: #999;
-          background: white;
+          display:inline-flex; align-items:center; gap:6px;
+          padding:5px 13px; border:1px solid rgba(184,146,74,.3);
+          font-size:9px; letter-spacing:.28em; text-transform:uppercase;
+          color:rgba(184,146,74,.9); background:rgba(184,146,74,.06);
+          backdrop-filter:blur(6px);
         }
 
-        /* ── GAP SYSTEM ──
-           All sections are separated by a visible gap strip.
-           --section-gap controls vertical breathing room.
-        */
-        :root {
-          --section-gap: 6rem;        /* 96px desktop */
-          --section-gap-sm: 3.5rem;   /* 56px mobile  */
-          --inner-gap: 1.5rem;        /* gap between cards inside a grid */
-          --inner-gap-lg: 2rem;       /* larger inner gap for featured rows */
+        /* ── Tag pill (white — on image/video) ── */
+        .tag-pill-light {
+          display:inline-flex; align-items:center; gap:6px;
+          padding:5px 13px; border:1px solid rgba(255,255,255,.3);
+          font-size:9px; letter-spacing:.28em; text-transform:uppercase;
+          color:rgba(255,255,255,.8); background:rgba(255,255,255,.12);
+          backdrop-filter:blur(6px);
         }
 
-        @media (max-width: 768px) {
-          :root {
-            --section-gap: var(--section-gap-sm);
+        /* ── Divider ── */
+        .divider {
+          height:1px;
+          background:linear-gradient(to right, transparent, rgba(184,146,74,.15) 30%, rgba(184,146,74,.15) 70%, transparent);
+        }
+
+        /* ── Number label ── */
+        .num-label {
+          position:absolute; bottom:10px; left:12px;
+          font-size:9px; letter-spacing:.3em; text-transform:uppercase;
+          color:rgba(255,255,255,.45); z-index:3; pointer-events:none;
+        }
+
+        /* ── Section label ── */
+        .section-label {
+          font-size:9px; letter-spacing:.42em; text-transform:uppercase; color:#b8924a;
+        }
+
+        /* ── Gold shimmer ── */
+        .gold-shimmer {
+          background:linear-gradient(90deg,#b8924a 0%,#d4aa6a 40%,#b8924a 60%,#9a7535 100%);
+          background-size:200% auto;
+          -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+          background-clip:text;
+          animation:shimmer 6s linear infinite;
+        }
+
+        /* ── Lightbox — frosted white ── */
+        .lightbox-backdrop {
+          position:fixed; inset:0; z-index:100;
+          background:rgba(250,249,246,.96); backdrop-filter:blur(18px);
+          display:flex; align-items:center; justify-content:center;
+          animation:fadeIn .2s ease;
+        }
+
+        /* ── Scroll float ── */
+        .scroll-float { animation:floatAnim 3s ease-in-out infinite; }
+
+        /* ── Thumb strip ── */
+        .scrollbar-hide::-webkit-scrollbar { display:none }
+        .scrollbar-hide { -ms-overflow-style:none; scrollbar-width:none }
+
+        /* ── Hero: portrait image panel on right ── */
+        .hero-portrait-slide {
+          position:absolute; top:0; right:0; bottom:0;
+          width:58%;
+          overflow:hidden;
+        }
+        @media(max-width:768px){
+          .hero-portrait-slide { width:100%; }
+        }
+        .hero-portrait-slide img {
+          width:100%; height:100%; object-fit:cover;
+          transition:opacity 1.2s ease;
+        }
+
+        /* ── Meta card ── */
+        .meta-card {
+          border:1px solid #ede9e2;
+          background:#faf9f6;
+          padding:1.25rem;
+          transition:border-color .3s, box-shadow .3s;
+        }
+        .meta-card:hover {
+          border-color:rgba(184,146,74,.35);
+          box-shadow:0 4px 24px rgba(184,146,74,.07);
+        }
+
+        /* ══════════════════════════════
+           MAP SECTION STYLES
+        ══════════════════════════════ */
+
+        /* Map wrapper reveal */
+        .map-wrapper.visible {
+          animation: mapReveal 1s cubic-bezier(.16,1,.3,1) forwards;
+        }
+        .map-wrapper { opacity:0; }
+
+        /* Map container border pulse */
+        .map-border-frame {
+          border: 1px solid rgba(184,146,74,.18);
+          animation: borderPulse 4s ease-in-out infinite;
+          position: relative;
+        }
+
+        /* Scan line effect over map */
+        .map-scanline {
+          position: absolute;
+          left: 0; right: 0;
+          height: 2px;
+          background: linear-gradient(to right, transparent, rgba(184,146,74,.35), transparent);
+          pointer-events: none;
+          z-index: 5;
+          animation: scanLine 4s linear infinite;
+        }
+
+        /* Corner crosshair marks on map */
+        .map-corner {
+          position: absolute;
+          width: 22px; height: 22px;
+          z-index: 6; pointer-events: none;
+        }
+        .map-corner-tl { top: 12px; left: 12px; border-top: 2px solid rgba(184,146,74,.7); border-left: 2px solid rgba(184,146,74,.7); }
+        .map-corner-tr { top: 12px; right: 12px; border-top: 2px solid rgba(184,146,74,.7); border-right: 2px solid rgba(184,146,74,.7); }
+        .map-corner-bl { bottom: 12px; left: 12px; border-bottom: 2px solid rgba(184,146,74,.7); border-left: 2px solid rgba(184,146,74,.7); }
+        .map-corner-br { bottom: 12px; right: 12px; border-bottom: 2px solid rgba(184,146,74,.7); border-right: 2px solid rgba(184,146,74,.7); }
+
+        /* Glow pin icon */
+        .map-pin-glow {
+          animation: pinBounce 3s ease-in-out infinite, glowPulse 2s ease-in-out infinite;
+          filter: drop-shadow(0 0 8px rgba(184,146,74,0.8));
+        }
+
+        /* Map info card */
+        .map-info-card {
+          background: #faf9f6;
+          border: 1px solid rgba(184,146,74,.18);
+          transition: border-color .35s, box-shadow .35s, transform .35s;
+        }
+        .map-info-card:hover {
+          border-color: rgba(184,146,74,.5);
+          box-shadow: 0 8px 32px rgba(184,146,74,.1);
+          transform: translateY(-2px);
+        }
+
+        /* Stat item */
+        .map-stat {
+          position: relative;
+          padding-left: 14px;
+        }
+        .map-stat::before {
+          content: '';
+          position: absolute;
+          left: 0; top: 50%;
+          transform: translateY(-50%);
+          width: 3px; height: 28px;
+          background: linear-gradient(to bottom, #b8924a, rgba(184,146,74,0.2));
+        }
+
+        /* Open maps button */
+        .open-map-btn {
+          display: inline-flex; align-items: center; gap: 8px;
+          padding: 11px 22px;
+          border: 1px solid rgba(184,146,74,.35);
+          color: #b8924a;
+          font-size: 9px; letter-spacing: .32em; text-transform: uppercase;
+          background: rgba(184,146,74,.04);
+          transition: all .4s;
+          cursor: pointer;
+          text-decoration: none;
+        }
+        .open-map-btn:hover {
+          background: #b8924a;
+          color: white;
+          border-color: #b8924a;
+          box-shadow: 0 6px 24px rgba(184,146,74,.3);
+        }
+        .open-map-btn svg { transition: transform .3s; }
+        .open-map-btn:hover svg { transform: translate(2px,-2px); }
+
+        /* Iframe loading shimmer */
+        .iframe-shimmer {
+          background: linear-gradient(90deg, #f0ece6 25%, #e8e4de 50%, #f0ece6 75%);
+          background-size: 200% 100%;
+          animation: shimmer 1.8s ease-in-out infinite;
+        }
+
+        /* Coordinates badge */
+        .coord-badge {
+          display: inline-flex; align-items: center; gap: 6px;
+          padding: 4px 10px;
+          background: rgba(184,146,74,.08);
+          border: 1px solid rgba(184,146,74,.2);
+          font-size: 8px; letter-spacing: .2em;
+          color: rgba(184,146,74,.7);
+          font-variant-numeric: tabular-nums;
+        }
+
+        /* Responsive map layout */
+        .map-layout {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 20px;
+        }
+        @media(min-width:768px) {
+          .map-layout {
+            grid-template-columns: 1fr 320px;
+            gap: 24px;
+            align-items: stretch;
+          }
+        }
+        @media(min-width:1024px) {
+          .map-layout {
+            grid-template-columns: 1fr 360px;
+            gap: 28px;
           }
         }
 
-        /* Between-section gap divider */
-        .section-spacer {
-          height: var(--section-gap);
-          background: #faf9f7;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+        .map-iframe-wrap {
           position: relative;
+          height: 300px;
+          overflow: hidden;
         }
-        .section-spacer::before {
-          content: '';
-          position: absolute;
-          left: 2rem;
-          right: 2rem;
-          top: 50%;
-          height: 1px;
-          background: linear-gradient(to right, transparent, #e8e3da 30%, #e8e3da 70%, transparent);
-        }
-        @media(min-width:768px){
-          .section-spacer::before { left: 4rem; right: 4rem; }
-        }
-
-        /* Image / video inner gap */
-        .media-grid { gap: var(--inner-gap); }
-        .media-grid-lg { gap: var(--inner-gap-lg); }
+        @media(min-width:640px) { .map-iframe-wrap { height: 380px; } }
+        @media(min-width:768px) { .map-iframe-wrap { height: 100%; min-height: 420px; } }
       `}</style>
 
-            {/* ════════════════════════════════════
-           HERO
-      ════════════════════════════════════ */}
-            <section className="relative h-screen min-h-[600px] overflow-hidden">
-                <div className="absolute inset-0">
+            {/* ════════ HERO ════════ */}
+            <section className="relative h-screen min-h-[600px] overflow-hidden bg-[#f5f2ed]">
+
+                {/* Portrait image — right side */}
+                <div className="hero-portrait-slide">
                     {project.images.map((img, i) => (
-                        <img
-                            key={img}
-                            src={img}
-                            alt=""
-                            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${i === activeImage ? "opacity-100" : "opacity-0"}`}
+                        <img key={img} src={img} alt=""
+                            className="absolute inset-0"
+                            style={{ opacity: i === activeImage ? 1 : 0 }}
                         />
                     ))}
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/70" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent" />
+                    <div className="absolute inset-0" style={{
+                        background: "linear-gradient(to right, #f5f2ed 0%, rgba(245,242,237,0.3) 38%, rgba(245,242,237,0) 100%)"
+                    }} />
+                    <div className="absolute inset-0" style={{
+                        background: "linear-gradient(to top, #f5f2ed 0%, rgba(245,242,237,0) 35%)"
+                    }} />
                 </div>
 
-                {/* Top bar */}
-                <div className={`absolute top-0 left-0 right-0 z-20 px-5 sm:px-8 md:px-16 py-6 sm:py-8 flex items-center justify-between transition-all duration-700 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"}`}>
-                    <button
-                        onClick={() => navigate(-1)}
-                        className="flex items-center gap-3 text-white/70 hover:text-white transition-all duration-300 group text-xs tracking-[0.25em] uppercase"
-                    >
-                        <svg className="w-4 h-4 transition-transform duration-300 group-hover:-translate-x-1" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-                        </svg>
-                        Back
-                    </button>
-                    <div className="tag-pill bg-white/10 border-white/20 text-white/70 backdrop-blur-sm">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#b8a88a]" />
-                        {project.location}
+                {/* Content */}
+                <div className="absolute inset-0 z-10 flex flex-col justify-between px-6 sm:px-10 md:px-16 py-8 md:py-12">
+
+                    {/* Top bar */}
+                    <div className={`flex items-center justify-between transition-all duration-700 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"}`}>
+                        <button onClick={() => navigate(-1)}
+                            className="flex items-center gap-3 text-[#1a1a1a]/40 hover:text-[#b8924a] transition-all duration-300 group text-[10px] tracking-[0.3em] uppercase"
+                        >
+                            <svg className="w-4 h-4 transition-transform duration-300 group-hover:-translate-x-1.5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                            </svg>
+                            Back
+                        </button>
+                        <div className="tag-pill">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#b8924a]" />
+                            {project.location}
+                        </div>
                     </div>
-                </div>
 
-                {/* Hero text */}
-                <div className="absolute bottom-0 left-0 right-0 z-20 px-5 sm:px-8 md:px-16 pb-14 sm:pb-16 md:pb-24">
-                    <div className={`transition-all duration-700 delay-100 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-                        <p className="text-[#b8a88a] text-xs tracking-[0.4em] uppercase mb-4 sm:mb-5">
-                            {String(project.images.length).padStart(2, "0")} Images &nbsp;·&nbsp; {String(project.videos.length).padStart(2, "0")} Videos
+                    {/* Bottom hero text */}
+                    <div className="max-w-lg">
+                        <div className={`transition-all duration-700 delay-100 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
+                            <p className="section-label mb-5">
+                                {String(project.images.length).padStart(2, "0")} Images &nbsp;&nbsp;·&nbsp;&nbsp; {String(project.videos.length).padStart(2, "0")} Videos
+                            </p>
+                        </div>
+
+                        <h1 className={`cormorant text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-light text-[#1a1a1a] leading-none mb-5 transition-all duration-700 delay-200 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
+                            {project.name}
+                        </h1>
+
+                        <p className={`text-[#1a1a1a]/40 text-sm font-light leading-relaxed max-w-xs mb-8 transition-all duration-700 delay-300 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
+                            {project.description}
                         </p>
-                    </div>
-                    <h1 className={`playfair text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-light text-white leading-none mb-4 sm:mb-6 transition-all duration-700 delay-200 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-                        {project.name}
-                    </h1>
-                    <p className={`text-white/50 font-light text-sm max-w-sm leading-relaxed transition-all duration-700 delay-300 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-                        {project.description}
-                    </p>
-                    <div className={`flex gap-2 mt-6 sm:mt-8 transition-all duration-700 delay-400 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-                        {project.images.map((_, i) => (
-                            <button
-                                key={i}
-                                onClick={() => setActiveImage(i)}
-                                className={`transition-all duration-400 rounded-full ${i === activeImage ? "w-8 h-1.5 bg-[#b8a88a]" : "w-1.5 h-1.5 bg-white/30 hover:bg-white/60"}`}
-                            />
-                        ))}
+
+                        {/* Dot indicators */}
+                        <div className={`flex items-center gap-2.5 transition-all duration-700 delay-400 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
+                            {project.images.map((_, i) => (
+                                <button key={i} onClick={() => setActiveImage(i)}
+                                    className={`transition-all duration-300 rounded-full ${i === activeImage ? "w-8 h-[3px] bg-[#b8924a]" : "w-[3px] h-[3px] bg-[#1a1a1a]/18 hover:bg-[#b8924a]/45"}`}
+                                />
+                            ))}
+                        </div>
                     </div>
                 </div>
 
-                {/* Scroll indicator */}
-                <div className={`scroll-float absolute bottom-8 right-8 sm:right-10 z-20 hidden sm:flex flex-col items-center gap-3 transition-all duration-700 delay-500 ${isLoaded ? "opacity-100" : "opacity-0"}`}>
-                    <span className="text-white/40 text-[9px] tracking-[0.35em] uppercase" style={{ writingMode: "vertical-rl" }}>Scroll</span>
-                    <svg className="w-4 h-4 text-white/40" fill="none" stroke="currentColor" strokeWidth="1" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" />
-                    </svg>
+                {/* Scroll cue */}
+                <div className={`scroll-float absolute bottom-8 left-1/2 -translate-x-1/2 z-20 hidden sm:flex flex-col items-center gap-3 transition-all duration-700 delay-600 ${isLoaded ? "opacity-100" : "opacity-0"}`}>
+                    <div className="w-px h-12 bg-gradient-to-b from-transparent to-[#b8924a]/35" />
+                    <span className="text-[#b8924a]/55 text-[8px] tracking-[0.5em] uppercase">Explore</span>
                 </div>
             </section>
 
-            {/* ── GAP ── */}
-            <div className="section-spacer" />
+            <div className="divider" />
 
-            {/* ════════════════════════════════════
-           PROJECT INTRO STRIP
-      ════════════════════════════════════ */}
-            <section
-                ref={(el) => addRef(el, 0)}
-                data-section="intro"
-                className="px-5 sm:px-8 md:px-16 noise-bg"
+            {/* ════════ PROJECT META ════════ */}
+            <section ref={(el) => addRef(el, 0)} data-section="intro"
+                className="px-6 sm:px-10 md:px-16 py-16 sm:py-20 bg-white"
             >
-                <div className="max-w-6xl mx-auto">
+                <div className="max-w-5xl mx-auto">
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-20 items-start">
+
                         <div className={`md:col-span-3 reveal ${visibleSections.has("intro") ? "visible" : ""}`}>
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="h-px w-8 bg-[#b8a88a] section-line" />
-                                <span className="text-[10px] tracking-[0.4em] uppercase text-[#b8a88a]">The Project</span>
+                            <div className="flex items-center gap-4 mb-3">
+                                <div className="w-8 h-px bg-[#b8924a]" />
+                                <span className="section-label">The Project</span>
                             </div>
                         </div>
-                        <div className="md:col-span-9 grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-10">
+
+                        <div className="md:col-span-9 grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-8">
                             {[
                                 { label: "Name", value: project.name },
                                 { label: "Location", value: project.location },
                                 { label: "Overview", value: project.description },
                             ].map((item, i) => (
-                                <div key={item.label} className={`reveal d${i + 1} ${visibleSections.has("intro") ? "visible" : ""}`}>
-                                    <p className="text-[10px] tracking-[0.35em] uppercase text-[#bbb] mb-3">{item.label}</p>
-                                    <p className="playfair text-xl font-light text-[#1a1a1a] leading-snug">{item.value}</p>
-                                    <div className="mt-4 h-px bg-[#e8e3da]" />
+                                <div key={item.label}
+                                    className={`meta-card reveal d${i + 1} ${visibleSections.has("intro") ? "visible" : ""}`}
+                                >
+                                    <p className="text-[9px] tracking-[0.38em] uppercase text-[#b8924a]/65 mb-2.5">{item.label}</p>
+                                    <p className="cormorant text-xl font-light text-[#1a1a1a] leading-snug">{item.value}</p>
                                 </div>
                             ))}
                         </div>
@@ -298,228 +494,379 @@ const ProjectDetails = () => {
                 </div>
             </section>
 
-            {/* ── GAP ── */}
-            <div className="section-spacer" />
+            <div className="divider" />
 
-            {/* ════════════════════════════════════
-           IMAGES — EDITORIAL MASONRY
-      ════════════════════════════════════ */}
-            <section
-                ref={(el) => addRef(el, 1)}
-                data-section="images"
-                className="px-6 sm:px-10 md:px-20 lg:px-28 xl:px-32 bg-white py-10"
+            {/* ════════ IMAGES — PORTRAIT GRID ════════ */}
+            <section ref={(el) => addRef(el, 1)} data-section="images"
+                className="px-4 sm:px-6 md:px-10 lg:px-14 py-12 sm:py-16 bg-[#f7f5f1]"
             >
-                <div className="w-full max-w-[1600px] mx-auto flex flex-col gap-12">
+                <div className="max-w-[1400px] mx-auto flex flex-col gap-8 sm:gap-10">
 
-                    {/* Section heading */}
-                    <div className={`flex items-end justify-between reveal ${visibleSections.has("images") ? "visible" : ""}`}>
-                        <div className="flex flex-col gap-4">
-                            <p className="text-[10px] tracking-[0.4em] uppercase text-[#b8a88a]">Photography</p>
-                            <h2 className="playfair text-3xl sm:text-4xl md:text-5xl font-light text-[#1a1a1a]">Visual Gallery</h2>
+                    {/* Heading */}
+                    <div className={`flex items-end justify-between px-1 reveal ${visibleSections.has("images") ? "visible" : ""}`}>
+                        <div>
+                            <p className="section-label mb-2.5">Photography</p>
+                            <h2 className="cormorant text-3xl sm:text-4xl md:text-5xl font-light text-[#1a1a1a]">Visual Gallery</h2>
                         </div>
-                        <span className="playfair text-5xl sm:text-6xl font-light text-[#f0ece4] leading-none">
+                        <span className="cormorant text-5xl sm:text-6xl font-extralight leading-none select-none pr-1" style={{ color: "rgba(26,26,26,0.06)" }}>
                             {String(project.images.length).padStart(2, "0")}
                         </span>
                     </div>
 
-                    {/* Featured image */}
-                    <div
-                        className={`img-card relative cursor-pointer group reveal d1 ${visibleSections.has("images") ? "visible" : ""}`}
-                        onClick={() => setLightbox({ type: "image", src: project.images[0] })}
-                    >
-                        <div className="aspect-[16/7] sm:aspect-[21/8] bg-[#f0ece4]">
-                            <img src={project.images[0]} alt={project.name} className="w-full h-full object-cover" />
-                        </div>
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-500 flex items-center justify-center">
-                            <div className="opacity-0 group-hover:opacity-100 transition-all duration-400 bg-white/90 backdrop-blur-sm px-6 py-3 text-xs tracking-[0.3em] uppercase text-[#1a1a1a]">
-                                View Full
+                    {/* Portrait masonry grid */}
+                    <div className="portrait-grid">
+
+                        {/* Featured */}
+                        <div
+                            className={`img-card portrait-featured reveal d1 ${visibleSections.has("images") ? "visible" : ""}`}
+                            style={{ minHeight: 320 }}
+                            onClick={() => setLightbox({ type: "image", src: project.images[0] })}
+                        >
+                            <img src={project.images[0]} alt={project.name} style={{ height: "100%" }} />
+                            <div className="media-overlay" />
+                            <div className="overlay-expand">
+                                <div className="expand-icon">
+                                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                                    </svg>
+                                </div>
                             </div>
+                            <div className="corner-tl" /><div className="corner-br" />
+                            <span className="num-label">01 / {String(project.images.length).padStart(2, "0")}</span>
+                            <div className="tag-pill-light absolute top-3 left-3 z-10" style={{ fontSize: "8px" }}>Featured</div>
                         </div>
-                        <span className="absolute top-5 left-5 w-8 h-8 border-t-2 border-l-2 border-white/60" />
-                        <span className="absolute bottom-5 right-5 w-8 h-8 border-b-2 border-r-2 border-white/60" />
-                    </div>
 
-                    {/* Grid images */}
-                    {project.images.length > 1 && (
-                        <div className="grid grid-cols-12 gap-8">
-                            {project.images.slice(1).map((img, i) => {
-                                const spans = [
-                                    "col-span-12 sm:col-span-7",
-                                    "col-span-12 sm:col-span-5",
-                                    "col-span-12 sm:col-span-5",
-                                    "col-span-12 sm:col-span-7",
-                                ];
-                                const aspects = [
-                                    "aspect-[4/3]",
-                                    "aspect-[3/4]",
-                                    "aspect-[3/4]",
-                                    "aspect-[4/3]",
-                                ];
-                                return (
-                                    <div
-                                        key={img}
-                                        className={`${spans[i % spans.length]} img-card relative cursor-pointer group reveal d${(i % 3) + 2} ${visibleSections.has("images") ? "visible" : ""}`}
-                                        onClick={() => setLightbox({ type: "image", src: img })}
-                                    >
-                                        <div className={`${aspects[i % aspects.length]} bg-[#f0ece4]`}>
-                                            <img src={img} alt={`${project.name} ${i + 2}`} className="w-full h-full object-cover" />
-                                        </div>
-                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-all duration-500" />
-                                        <div className="absolute bottom-4 left-4 text-white/0 group-hover:text-white/80 transition-all duration-400 text-[10px] tracking-[0.3em] uppercase">
-                                            {String(i + 2).padStart(2, "0")} / {String(project.images.length).padStart(2, "0")}
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    )}
-
-                    {/* Thumbnails */}
-                    <div className="flex gap-4 overflow-x-auto scrollbar-hide">
-                        {project.images.map((img, i) => (
-                            <button
-                                key={i}
+                        {/* Rest */}
+                        {project.images.slice(1).map((img, i) => (
+                            <div
+                                key={img}
+                                className={`img-card portrait-card reveal d${(i % 6) + 2} ${visibleSections.has("images") ? "visible" : ""}`}
                                 onClick={() => setLightbox({ type: "image", src: img })}
-                                className={`relative flex-shrink-0 w-20 h-14 md:w-28 md:h-16 img-card transition-all duration-300 ${i === 0 ? "thumb-active" : "opacity-50 hover:opacity-90"}`}
                             >
-                                <img src={img} alt="" className="w-full h-full object-cover" />
-                            </button>
+                                <img src={img} alt={`${project.name} ${i + 2}`} />
+                                <div className="media-overlay" />
+                                <div className="overlay-expand">
+                                    <div className="expand-icon">
+                                        <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <span className="num-label">{String(i + 2).padStart(2, "0")}</span>
+                            </div>
                         ))}
                     </div>
 
+                    {/* Thumb strip */}
+                    <div className="flex gap-2.5 overflow-x-auto scrollbar-hide pb-1 pt-2 px-1">
+                        {project.images.map((img, i) => (
+                            <button key={i}
+                                onClick={() => setLightbox({ type: "image", src: img })}
+                                className={`relative flex-shrink-0 img-card transition-all duration-300 ${i === 0 ? "ring-1 ring-[#b8924a]" : "opacity-40 hover:opacity-80"}`}
+                                style={{ width: 50, height: 70, borderRadius: 2 }}
+                            >
+                                <img src={img} alt="" />
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </section>
 
-            {/* ── GAP between Images and Videos ── */}
-            <div className="section-spacer" style={{ height: "calc(var(--section-gap) * 1.25)" }} />
+            <div className="divider" />
 
-            {/* ════════════════════════════════════
-           VIDEOS
-      ════════════════════════════════════ */}
-            <section
-                ref={(el) => addRef(el, 2)}
-                data-section="videos"
-                className="px-6 sm:px-10 md:px-20 lg:px-28 xl:px-32 noise-bg py-10"
+            {/* ════════ VIDEOS — PORTRAIT GRID ════════ */}
+            <section ref={(el) => addRef(el, 2)} data-section="videos"
+                className="px-4 sm:px-6 md:px-10 lg:px-14 py-12 sm:py-16 bg-white"
             >
-                <div className="w-full max-w-[1600px] mx-auto flex flex-col gap-12">
+                <div className="max-w-[1400px] mx-auto flex flex-col gap-8 sm:gap-10">
 
-                    {/* Section heading */}
-                    <div className={`flex items-end justify-between reveal ${visibleSections.has("videos") ? "visible" : ""}`}>
-                        <div className="flex flex-col gap-4">
-                            <p className="text-[10px] tracking-[0.4em] uppercase text-[#b8a88a]">Cinematic</p>
-                            <h2 className="playfair text-3xl sm:text-4xl md:text-5xl font-light text-[#1a1a1a]">Video Tour</h2>
+                    {/* Heading */}
+                    <div className={`flex items-end justify-between px-1 reveal ${visibleSections.has("videos") ? "visible" : ""}`}>
+                        <div>
+                            <p className="section-label mb-2.5">Cinematic</p>
+                            <h2 className="cormorant text-3xl sm:text-4xl md:text-5xl font-light text-[#1a1a1a]">Video Tour</h2>
                         </div>
-                        <span className="playfair text-5xl sm:text-6xl font-light text-[#e8e3da] leading-none">
+                        <span className="cormorant text-5xl sm:text-6xl font-extralight leading-none select-none pr-1" style={{ color: "rgba(26,26,26,0.06)" }}>
                             {String(project.videos.length).padStart(2, "0")}
                         </span>
                     </div>
 
-                    {/* Featured video */}
-                    {project.videos[0] && (
-                        <div
-                            className={`vid-card relative cursor-pointer group reveal d1 ${visibleSections.has("videos") ? "visible" : ""}`}
-                            onClick={() => setLightbox({ type: "video", src: project.videos[0] })}
-                        >
-                            <div className="aspect-[16/8] bg-[#1a1a1a] relative overflow-hidden">
-                                <video
-                                    src={project.videos[0]}
-                                    className="w-full h-full object-cover opacity-75 group-hover:opacity-90 transition-opacity duration-500"
+                    {/* Portrait video grid */}
+                    <div className="vid-portrait-grid">
+                        {project.videos.map((video, i) => (
+                            <div
+                                key={i}
+                                className={`vid-card vid-portrait-card reveal d${(i % 5) + 1} ${visibleSections.has("videos") ? "visible" : ""}`}
+                                style={{ background: "#e8e4de" }}
+                                onClick={() => setLightbox({ type: "video", src: video })}
+                            >
+                                <video src={video}
                                     muted loop playsInline
+                                    style={{ opacity: i === 0 ? 0.92 : 0.78 }}
                                     onMouseEnter={(e) => e.target.play()}
                                     onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
                                 />
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="play-btn w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/90 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-2xl">
-                                        <svg className="w-6 h-6 sm:w-7 sm:h-7 text-[#1a1a1a] ml-1" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M8 5v14l11-7z" />
-                                        </svg>
+                                <div className="media-overlay" />
+
+                                {/* Play button */}
+                                <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                                    {i === 0 ? (
+                                        <div className="play-btn w-14 h-14 rounded-full bg-[#b8924a] flex items-center justify-center shadow-2xl">
+                                            <svg className="w-5 h-5 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M8 5v14l11-7z" />
+                                            </svg>
+                                        </div>
+                                    ) : (
+                                        <div className="w-11 h-11 rounded-full border border-white/40 flex items-center justify-center backdrop-blur-sm bg-white/10">
+                                            <svg className="w-4 h-4 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M8 5v14l11-7z" />
+                                            </svg>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {i === 0 && (
+                                    <div className="tag-pill-light absolute top-3 left-3 z-10" style={{ fontSize: "8px" }}>
+                                        <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+                                        Feature
                                     </div>
-                                </div>
-                                <div className="absolute top-4 left-4 sm:top-6 sm:left-6 tag-pill bg-black/40 border-white/20 text-white/70 backdrop-blur-sm">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
-                                    Feature Film
-                                </div>
-                                <span className="absolute top-4 right-4 sm:top-6 sm:right-6 text-white/40 text-xs tracking-[0.3em] uppercase">
-                                    01 / {String(project.videos.length).padStart(2, "0")}
+                                )}
+                                <div className="corner-tl" /><div className="corner-br" />
+                                <span className="num-label">
+                                    {String(i + 1).padStart(2, "0")} / {String(project.videos.length).padStart(2, "0")}
                                 </span>
                             </div>
-                        </div>
-                    )}
-
-                    {/* Remaining videos grid */}
-                    {project.videos.length > 1 && (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {project.videos.slice(1).map((video, i) => (
-                                <div
-                                    key={i}
-                                    className={`vid-card relative cursor-pointer group reveal d${i + 2} ${visibleSections.has("videos") ? "visible" : ""}`}
-                                    onClick={() => setLightbox({ type: "video", src: video })}
-                                >
-                                    <div className="aspect-video bg-[#1a1a1a] relative overflow-hidden">
-                                        <video
-                                            src={video}
-                                            className="w-full h-full object-cover opacity-60 group-hover:opacity-85 transition-opacity duration-500"
-                                            muted loop playsInline
-                                            onMouseEnter={(e) => e.target.play()}
-                                            onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
-                                        />
-                                        <div className="absolute inset-0 flex items-center justify-center">
-                                            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-white/60 flex items-center justify-center group-hover:scale-110 group-hover:border-white group-hover:bg-white/10 transition-all duration-300 backdrop-blur-sm">
-                                                <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
-                                                    <path d="M8 5v14l11-7z" />
-                                                </svg>
-                                            </div>
-                                        </div>
-                                        <div className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black/70 to-transparent translate-y-2 group-hover:translate-y-0 transition-transform duration-400">
-                                            <p className="text-white/50 text-[10px] tracking-[0.3em] uppercase">
-                                                {String(i + 2).padStart(2, "0")} / {String(project.videos.length).padStart(2, "0")}
-                                            </p>
-                                        </div>
-                                        <span className="absolute top-4 right-4 w-6 h-6 border-t border-r border-white/30" />
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
+                        ))}
+                    </div>
                 </div>
             </section>
 
-            {/* ── GAP before CTA ── */}
-            <div className="section-spacer" />
+            <div className="divider" />
 
-            {/* ════════════════════════════════════
-                        CTA FOOTER BAND
-                ════════════════════════════════════ */}
-            <section
-                ref={(el) => addRef(el, 3)}
-                data-section="cta"
-                className="px-5 sm:px-8 md:px-16 py-20 sm:py-24 md:py-36 bg-[#1a1a1a] relative overflow-hidden"
+            {/* ════════ LOCATION & MAP ════════ */}
+            {project.mapEmbedUrl && (
+                <section
+                    ref={(el) => addRef(el, 4)}
+                    data-section="map"
+                    className="px-4 sm:px-6 md:px-10 lg:px-14 py-12 sm:py-16 md:py-20 bg-[#f7f5f1]"
+                >
+                    <div className="max-w-[1400px] mx-auto flex flex-col gap-8 sm:gap-10">
+
+                        {/* ── Section heading ── */}
+                        <div className={`flex items-end justify-between px-1 reveal ${visibleSections.has("map") ? "visible" : ""}`}>
+                            <div>
+                                <p className="section-label mb-2.5">Location</p>
+                                <h2 className="cormorant text-3xl sm:text-4xl md:text-5xl font-light text-[#1a1a1a]">
+                                    Find Your Way
+                                </h2>
+                            </div>
+                            {/* Ghost watermark */}
+                            <span
+                                className="cormorant text-5xl sm:text-6xl font-extralight leading-none select-none pr-1 hidden sm:block"
+                                style={{ color: "rgba(26,26,26,0.05)" }}
+                            >
+                                MAP
+                            </span>
+                        </div>
+
+                        {/* ── Map + Info two-column layout ── */}
+                        <div className={`map-wrapper map-layout ${visibleSections.has("map") ? "visible" : ""}`}
+                            style={{ animationDelay: "0.1s" }}
+                        >
+
+                            {/* ── Map iframe ── */}
+                            <div className="map-border-frame" style={{ overflow: "hidden" }}>
+
+                                {/* Animated corner crosshairs */}
+                                <div className="map-corner map-corner-tl" />
+                                <div className="map-corner map-corner-tr" />
+                                <div className="map-corner map-corner-bl" />
+                                <div className="map-corner map-corner-br" />
+
+                                {/* Scan line sweep */}
+                                <div className="map-scanline" />
+
+                                {/* Loading shimmer shown until iframe loads */}
+                                <div
+                                    className="map-iframe-wrap"
+                                    style={{ position: "relative" }}
+                                >
+                                    {!mapLoaded && (
+                                        <div
+                                            className="iframe-shimmer absolute inset-0 z-10 flex items-center justify-center"
+                                        >
+                                            <div className="flex flex-col items-center gap-3">
+                                                {/* Animated pin during load */}
+                                                <svg
+                                                    className="map-pin-glow w-8 h-8"
+                                                    viewBox="0 0 24 24"
+                                                    fill="#b8924a"
+                                                >
+                                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                                                </svg>
+                                                <span
+                                                    className="text-[8px] tracking-[0.4em] uppercase"
+                                                    style={{ color: "rgba(184,146,74,0.6)" }}
+                                                >
+                                                    Loading map…
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <iframe
+                                        src={project.mapEmbedUrl}
+                                        title={`Map of ${project.location}`}
+                                        onLoad={() => setMapLoaded(true)}
+                                        allowFullScreen
+                                        loading="lazy"
+                                        referrerPolicy="no-referrer-when-downgrade"
+                                        style={{
+                                            width: "100%",
+                                            height: "100%",
+                                            border: "none",
+                                            display: "block",
+                                            opacity: mapLoaded ? 1 : 0,
+                                            transition: "opacity 0.8s ease",
+                                            filter: "sepia(12%) contrast(1.04) saturate(0.95)",
+                                        }}
+                                    />
+                                </div>
+
+                                {/* Bottom overlay label */}
+                                <div
+                                    style={{
+                                        position: "absolute",
+                                        bottom: 0, left: 0, right: 0,
+                                        height: "56px",
+                                        background: "linear-gradient(to top, rgba(245,242,237,0.85) 0%, transparent 100%)",
+                                        pointerEvents: "none",
+                                        zIndex: 4,
+                                    }}
+                                />
+                            </div>
+
+                            {/* ── Info sidebar ── */}
+                            <div className="flex flex-col gap-4">
+
+                                {/* Location card */}
+                                <div className="map-info-card p-5 sm:p-6">
+                                    <div className="flex items-start gap-4">
+                                        {/* Animated pin icon */}
+                                        <div className="flex-shrink-0 mt-1">
+                                            <svg
+                                                className="map-pin-glow w-6 h-6"
+                                                viewBox="0 0 24 24"
+                                                fill="#b8924a"
+                                            >
+                                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p className="text-[9px] tracking-[0.38em] uppercase text-[#b8924a]/65 mb-1.5">
+                                                Address
+                                            </p>
+                                            <p className="cormorant text-2xl font-light text-[#1a1a1a] leading-snug mb-1">
+                                                {project.location}
+                                            </p>
+                                            <p className="text-[11px] text-[#1a1a1a]/35 font-light leading-relaxed">
+                                                {project.name}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Stats row */}
+                                <div
+                                    className="map-info-card p-5 sm:p-6 grid grid-cols-2 gap-x-6 gap-y-5"
+                                >
+                                    {[
+                                        // { label: "Images", value: String(project.images.length).padStart(2, "0") },
+                                        // { label: "Videos", value: String(project.videos.length).padStart(2, "0") },
+                                        { label: "Status", value: "Available" },
+                                        { label: "Type", value: "Residential" },
+                                    ].map((stat) => (
+                                        <div key={stat.label} className="map-stat">
+                                            <p className="text-[9px] tracking-[0.32em] uppercase text-[#b8924a]/60 mb-1">
+                                                {stat.label}
+                                            </p>
+                                            <p className="cormorant text-xl font-light text-[#1a1a1a]">
+                                                {stat.value}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Open in Maps CTA */}
+                                <div className="map-info-card p-5 sm:p-6 flex flex-col gap-4">
+                                    <p className="text-[10px] font-light text-[#1a1a1a]/40 leading-relaxed">
+                                        View this property's precise location on Google Maps for directions and nearby landmarks.
+                                    </p>
+                                    <a
+                                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(project.location)}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="open-map-btn"
+                                    >
+                                        Open in Google Maps
+                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                                        </svg>
+                                    </a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            )}
+
+            <div className="divider" />
+
+            {/* ════════ CTA BAND ════════ */}
+            <section ref={(el) => addRef(el, 3)} data-section="cta"
+                className="relative px-6 sm:px-10 md:px-16 py-24 sm:py-32 md:py-40 overflow-hidden"
+                style={{ background: "#1a1714" }}
             >
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
-                    <span className="playfair text-[80px] sm:text-[120px] md:text-[200px] font-light text-white/[0.03] leading-none whitespace-nowrap">
+                {/* Watermark */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0">
+                    <span className="cormorant font-extralight leading-none whitespace-nowrap"
+                        style={{ fontSize: "clamp(80px,18vw,260px)", color: "rgba(255,255,255,0.025)" }}
+                    >
                         {project.location}
                     </span>
                 </div>
 
-                <div className="max-w-6xl mx-auto relative">
+                {/* Gold accent lines */}
+                <div className="absolute top-0 left-16 right-16 h-px" style={{ background: "linear-gradient(to right, transparent, rgba(184,146,74,.22) 30%, rgba(184,146,74,.22) 70%, transparent)" }} />
+                <div className="absolute bottom-0 left-16 right-16 h-px" style={{ background: "linear-gradient(to right, transparent, rgba(184,146,74,.22) 30%, rgba(184,146,74,.22) 70%, transparent)" }} />
+
+                <div className="max-w-5xl mx-auto relative z-10">
                     <div className={`reveal ${visibleSections.has("cta") ? "visible" : ""}`}>
-                        <p className="text-[10px] tracking-[0.4em] uppercase text-[#b8a88a] mb-6">Interested in this property?</p>
-                        <h2 className="playfair text-3xl sm:text-4xl md:text-6xl font-light text-white leading-tight mb-8 sm:mb-10 max-w-2xl">
-                            Let's start a<br />
-                            <em className="text-[#b8a88a]">conversation</em>
+                        <p className="section-label mb-6" style={{ color: "#c9a96e" }}>Interested in this property?</p>
+                        <h2 className="cormorant font-light leading-tight mb-4 max-w-2xl"
+                            style={{ fontSize: "clamp(2.5rem,6vw,4.5rem)", color: "white" }}
+                        >
+                            Let's start a{" "}
+                            <em className="gold-shimmer not-italic">conversation</em>
                         </h2>
+                        <p className="text-sm font-light leading-relaxed max-w-sm mb-10" style={{ color: "rgba(255,255,255,0.3)" }}>
+                            Our team is ready to help you explore this exceptional property and find your perfect match.
+                        </p>
                     </div>
 
                     <div className={`flex flex-wrap gap-4 reveal d2 ${visibleSections.has("cta") ? "visible" : ""}`}>
-                        <button className="group flex items-center gap-3 px-8 sm:px-10 py-4 bg-[#b8a88a] text-white text-xs tracking-[0.3em] uppercase hover:bg-[#a8987a] transition-all duration-400">
+                        <button className="group flex items-center gap-3 px-9 py-4 bg-[#b8924a] text-white text-[10px] tracking-[0.35em] uppercase font-medium hover:bg-[#d4aa6a] transition-all duration-500">
                             Enquire Now
-                            <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                            <svg className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                             </svg>
                         </button>
-                        <button
-                            onClick={() => navigate(-1)}
-                            className="px-8 sm:px-10 py-4 border border-white/20 text-white/60 text-xs tracking-[0.3em] uppercase hover:border-white/50 hover:text-white transition-all duration-400"
+                        <button onClick={() => navigate(-1)}
+                            className="px-9 py-4 text-[10px] tracking-[0.35em] uppercase transition-all duration-500"
+                            style={{ border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.35)" }}
+                            onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(184,146,74,0.45)"; e.currentTarget.style.color = "#d4aa6a"; }}
+                            onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; e.currentTarget.style.color = "rgba(255,255,255,0.35)"; }}
                         >
                             More Projects
                         </button>
@@ -527,18 +874,16 @@ const ProjectDetails = () => {
                 </div>
             </section>
 
-            {/* ════════════════════════════════════
-           LIGHTBOX
-      ════════════════════════════════════ */}
+            {/* ════════ LIGHTBOX — frosted white ════════ */}
             {lightbox && (
-                <div
-                    className="fixed inset-0 z-50 bg-black/98 backdrop-blur-md flex items-center justify-center"
-                    style={{ animation: "fadeIn 0.3s ease" }}
-                    onClick={() => setLightbox(null)}
-                >
-                    <button
-                        onClick={() => setLightbox(null)}
-                        className="absolute top-5 right-5 sm:top-7 sm:right-8 flex items-center gap-2 text-white/40 hover:text-white transition-colors text-xs tracking-[0.3em] uppercase z-10"
+                <div className="lightbox-backdrop" onClick={() => setLightbox(null)}>
+
+                    {/* Close */}
+                    <button onClick={() => setLightbox(null)}
+                        className="absolute top-5 right-5 sm:top-7 sm:right-8 flex items-center gap-2.5 transition-colors text-[10px] tracking-[0.3em] uppercase z-10"
+                        style={{ color: "rgba(26,26,26,0.35)" }}
+                        onMouseEnter={e => e.currentTarget.style.color = "#b8924a"}
+                        onMouseLeave={e => e.currentTarget.style.color = "rgba(26,26,26,0.35)"}
                     >
                         Close
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
@@ -546,48 +891,58 @@ const ProjectDetails = () => {
                         </svg>
                     </button>
 
+                    {/* Media */}
                     <div
-                        className="max-w-6xl w-full mx-4 sm:mx-8"
+                        className="relative mx-4 sm:mx-8"
+                        style={{
+                            maxHeight: "90vh",
+                            maxWidth: lightbox.type === "video" ? "420px" : "380px",
+                            width: "100%",
+                            animation: "slideUp .4s cubic-bezier(.16,1,.3,1)"
+                        }}
                         onClick={(e) => e.stopPropagation()}
-                        style={{ animation: "slideUp 0.4s cubic-bezier(0.16,1,0.3,1)" }}
                     >
-                        {lightbox.type === "image" ? (
-                            <img src={lightbox.src} alt="" className="w-full h-auto max-h-[88vh] object-contain" />
-                        ) : (
-                            <video src={lightbox.src} controls autoPlay className="w-full h-auto max-h-[88vh] rounded-sm" />
-                        )}
+                        {lightbox.type === "image"
+                            ? <img src={lightbox.src} alt="" className="w-full h-auto max-h-[88vh] object-contain" style={{ boxShadow: "0 30px 80px rgba(0,0,0,.12)" }} />
+                            : <video src={lightbox.src} controls autoPlay className="w-full h-auto max-h-[88vh]" style={{ boxShadow: "0 30px 80px rgba(0,0,0,.12)" }} />
+                        }
                     </div>
 
+                    {/* Prev / Next */}
                     {lightbox.type === "image" && (() => {
-                        const currentIdx = project.images.indexOf(lightbox.src);
+                        const idx = project.images.indexOf(lightbox.src);
                         return (
                             <>
                                 <button
-                                    className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 border border-white/20 flex items-center justify-center text-white/50 hover:text-white hover:border-white/60 transition-all duration-300"
+                                    className="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center transition-all duration-300 bg-white/70 backdrop-blur-sm"
+                                    style={{ border: "1px solid rgba(26,26,26,0.1)", color: "rgba(26,26,26,0.35)" }}
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        const prev = (currentIdx - 1 + project.images.length) % project.images.length;
-                                        setLightbox({ type: "image", src: project.images[prev] });
+                                        setLightbox({ type: "image", src: project.images[(idx - 1 + project.images.length) % project.images.length] });
                                     }}
+                                    onMouseEnter={e => { e.currentTarget.style.color = "#b8924a"; e.currentTarget.style.borderColor = "rgba(184,146,74,0.4)"; }}
+                                    onMouseLeave={e => { e.currentTarget.style.color = "rgba(26,26,26,0.35)"; e.currentTarget.style.borderColor = "rgba(26,26,26,0.1)"; }}
                                 >
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                                     </svg>
                                 </button>
                                 <button
-                                    className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 border border-white/20 flex items-center justify-center text-white/50 hover:text-white hover:border-white/60 transition-all duration-300"
+                                    className="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center transition-all duration-300 bg-white/70 backdrop-blur-sm"
+                                    style={{ border: "1px solid rgba(26,26,26,0.1)", color: "rgba(26,26,26,0.35)" }}
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        const next = (currentIdx + 1) % project.images.length;
-                                        setLightbox({ type: "image", src: project.images[next] });
+                                        setLightbox({ type: "image", src: project.images[(idx + 1) % project.images.length] });
                                     }}
+                                    onMouseEnter={e => { e.currentTarget.style.color = "#b8924a"; e.currentTarget.style.borderColor = "rgba(184,146,74,0.4)"; }}
+                                    onMouseLeave={e => { e.currentTarget.style.color = "rgba(26,26,26,0.35)"; e.currentTarget.style.borderColor = "rgba(26,26,26,0.1)"; }}
                                 >
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                                     </svg>
                                 </button>
-                                <p className="absolute bottom-6 sm:bottom-7 left-1/2 -translate-x-1/2 text-white/30 text-xs tracking-[0.3em] uppercase">
-                                    {String(currentIdx + 1).padStart(2, "0")} / {String(project.images.length).padStart(2, "0")}
+                                <p className="absolute bottom-5 left-1/2 -translate-x-1/2 text-[10px] tracking-[0.35em] uppercase" style={{ color: "rgba(26,26,26,0.25)" }}>
+                                    {String(idx + 1).padStart(2, "0")} / {String(project.images.length).padStart(2, "0")}
                                 </p>
                             </>
                         );
