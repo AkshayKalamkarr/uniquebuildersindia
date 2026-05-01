@@ -550,10 +550,12 @@ const Navbar = () => {
             <div className="nav-divider" />
 
             {/* Enquire */}
-            <button className="enquire-btn" onClick={() => alert("Enquire clicked")}>
-              <Phone size={14} />
-              Enquire
-            </button>
+            <Link to="/enquiry">
+              <button className="enquire-btn">
+                <Phone size={14} />
+                Enquire
+              </button>
+            </Link>
 
           </div>
 

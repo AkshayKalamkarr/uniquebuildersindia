@@ -7,6 +7,7 @@ import Director from "./components/Director"
 import ProjectDetails from "./pages/ProjectDetails";
 import OurImpact from './pages/OurImpact'
 import { projects } from "./data/projects";
+import EnquiryForm from "./pages/EnquiryForm";
 
 function App() {
   return (
@@ -20,6 +21,8 @@ function App() {
         <Route path="/director" element={<Director />} />
         <Route path="/projects/:slug" element={<ProjectDetails />} />
         <Route path="/our-impact" element={<OurImpact />} />
+        <Route path="/enquiry" element={<EnquiryForm />} />
+
       </Routes>
 
       {/* ✅ FOOTER */}

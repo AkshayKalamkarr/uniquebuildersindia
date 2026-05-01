@@ -521,7 +521,7 @@ export default function Home() {
             {/* ═══ §5 SIGNATURE HOSPITALITY ═══ */}
             <section style={{ background: '#faf9f7', padding: 'clamp(3.5rem,8vw,6rem) clamp(1.5rem,7vw,5.5rem)' }}>
                 <div className="two-col" style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1.1fr) minmax(0,1fr)', gap: 'clamp(2rem,5vw,5rem)', alignItems: 'center', maxWidth: 1080, margin: '0 auto' }}>
-                    <FancyImg src="/images/homepage/fourth.png" revealIn={hospInView} parallax style={{ height: 'clamp(260px,38vw,440px)' }} />
+                    <FancyImg src="/images/homepage/navimumbaiairport.jpg" revealIn={hospInView} parallax style={{ height: 'clamp(260px,38vw,440px)' }} />
                     <div ref={hospRef}>
                         <TextBlock inView={hospInView} label="Our Signature Service"
                             heading={<>Elevating<br />the everyday</>}
