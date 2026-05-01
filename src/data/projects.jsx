@@ -56,16 +56,15 @@ export const projects = [
         name: "Unique Palacio",
         location: "Kharghar, Navi Mumbai",
 
-        coverImage: "https://images.unsplash.com/photo-1600047508788-786f5e0ed1f5",
+        coverImage: "/images/uniquepalacio24/1.jpg",
 
         images: [
             "/images/uniquepalacio24/1.jpg",
         ],
 
         videos: [
-            "/images/uniquepalacio24/1.mp4",
-            "/images/uniquepalacio24/1.mp4",
-            "/images/uniquepalacio24/1.mp4",
+            "/images/uniquepalacio24/uniquePalacio-1.mp4",
+            "/images/uniquepalacio24/uniquePalacio-2.mp4",
 
         ],
 
@@ -73,25 +72,91 @@ export const projects = [
     },
 
     {
-        slug: "panvel",
-        name: "Green Valley Homes",
-        location: "Panvel, Navi Mumbai",
+        slug: "project-4",
+        name: "Unique Apartment",
+        location: "Ulwe, Navi Mumbai",
 
-        coverImage: "https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6",
+        coverImage: "/images/uniqueapartment420/1.jpg",
 
         images: [
-            "https://images.unsplash.com/photo-1600585152915-d208bec867a1",
-            "https://images.unsplash.com/photo-1600047509807-4c4c6c63c3d2",
-            "https://images.unsplash.com/photo-1600566752734-2c7e2c6c9c9f",
-            "https://images.unsplash.com/photo-1600607687920-123456789abc",
+            "/images/uniqueapartment420/1.jpg",
+            "/images/uniqueapartment420/2.jpg",
+            "/images/uniqueapartment420/3.jpg",
+            "/images/uniqueapartment420/4.jpg",
         ],
 
         videos: [
-            "https://samplelib.com/lib/preview/mp4/sample-5s.mp4",
-            "https://samplelib.com/lib/preview/mp4/sample-10s.mp4",
-            "https://samplelib.com/lib/preview/mp4/sample-15s.mp4",
+            "/images/uniqueapartment420/uniqueApartment-1.mp4",
         ],
 
-        description: "Affordable luxury homes surrounded by nature and open spaces.",
+        description: "Spacious homes with scenic hill views and world-class facilities.",
+    },
+
+    {
+        slug: "project-5",
+        name: "Ravi Apartment",
+        location: "Karanjade, Pushpak Node",
+
+        coverImage: "/images/raviapartment141/raviapartment-1.jpg",
+
+        images: [
+            "/images/raviapartment141/raviapartment-1.jpg",
+            "/images/raviapartment141/raviapartment-2.jpg",
+            "/images/raviapartment141/raviapartment-3.jpg",
+            "/images/raviapartment141/raviapartment-4.jpg",
+
+        ],
+
+        videos: [
+            "/images/raviapartment141/raviapartment-1.mp4",
+            "/images/raviapartment141/raviapartment-2.mp4",
+        ],
+
+        description: "Spacious homes with scenic hill views and world-class facilities.",
+    },
+
+    {
+        slug: "project-6",
+        name: "Happy Apartment",
+        location: "Khalapur, Rees",
+
+        coverImage: "/images/happyappartment/2.jpg",
+
+        images: [
+            "/images/happyappartment/1.jpg",
+            "/images/happyappartment/2.jpg",
+            "/images/happyappartment/3.jpg",
+            "/images/happyappartment/4.jpg",
+
+        ],
+
+        videos: [
+            "/images/happyappartment/happyapartment-1.mp4",
+            "/images/happyappartment/happyapartment-2.mp4",
+        ],
+
+        description: "Spacious homes with scenic hill views and world-class facilities.",
+    },
+
+
+    {
+        slug: "project-7",
+        name: "Unique Aura",
+        location: "Pushpak Nagar",
+
+        coverImage: "/images/uniqueaura/unique-2.jpeg",
+
+        images: [
+            "/images/uniqueaura/unique-1.jpeg",
+            "/images/uniqueaura/unique-2.jpeg",
+            "/images/uniqueaura/unique-3.jpeg",
+        ],
+
+        videos: [
+            "/images/uniqueaura/uniqueaura-1.mp4",
+            "/images/uniqueaura/uniqueaura-2.mp4",
+        ],
+
+        description: "Spacious homes with scenic hill views and world-class facilities.",
     },
 ];

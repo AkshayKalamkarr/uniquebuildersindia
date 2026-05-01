@@ -10,7 +10,11 @@ const BRAND = 'Unique builders & developers'
 const developments = [
     { id: 1, name: 'New City Palace', location: 'Pushpak Nagar', img: '/images/newcitypalace413/1.jpeg', color: '#2c3e50', slug: 'project-1' },
     { id: 2, name: 'Gajanan Enclave', location: 'Pushpak Nagar', img: '/images/gajananenclave357/1.jpg', color: '#1a3a4a', slug: 'project-2' },
-    { id: 2, name: 'Unique Palacio', location: 'Pushpak Nagar', img: '/images/uniquepalacio/1.jpg', color: '#1a3a4a', slug: 'project-3' },
+    { id: 3, name: 'Unique Palacio', location: 'Pushpak Nagar', img: '/images/uniquepalacio24/1.jpg', color: '#1a3a4a', slug: 'project-3' },
+    { id: 4, name: 'Unique Apartment', location: 'Ulwe', img: '/images/uniqueapartment420/1.jpg', color: '#1a3a4a', slug: 'project-4' },
+    { id: 5, name: 'Ravi Apartment', location: 'Karanjade, Pushpak Node', img: '/images/raviapartment141/raviapartment-5.jpg', color: '#1a3a4a', slug: 'project-5' },
+    { id: 6, name: 'Happy Apartment', location: 'Khalapur, Rees', img: '/images/happyappartment/2.jpg', color: '#1a3a4a', slug: 'project-6' },
+    { id: 7, name: 'Unique Aura', location: 'Pushpak Nagar', img: '/images/uniqueaura/unique-2.jpeg', color: '#1a3a4a', slug: 'project-7' },
 ]
 const footerLeft = ['Our Story', 'Our Impact', 'Our Developments', 'Experiences', 'Signature Hospitality', 'Press Room', 'Awards', 'Blogs']
 const footerRight = ['NRI', 'Investor Relations', 'Careers', 'Terms & Conditions', 'Disclaimer', 'Contact Us', 'SMART ODR']
@@ -511,20 +515,6 @@ export default function Home() {
                         ))}
                     </div>
 
-                    {/* View All CTA */}
-                    <div style={{ textAlign: 'center', marginTop: 'clamp(2rem,4vw,3rem)' }}>
-                        <div
-                            className={`stagger-wrap ${devGridInView ? 'revealed' : ''}`}
-                        >
-                            <button
-                                className="sc know-btn"
-                                onClick={() => navigate('/projects')}
-                                style={{ margin: '0 auto' }}
-                            >
-                                View All Projects <ArrowIcon />
-                            </button>
-                        </div>
-                    </div>
                 </div>
             </section>
 

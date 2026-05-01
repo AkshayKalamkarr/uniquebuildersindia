@@ -10,9 +10,12 @@ const WHATSAPP_MESSAGE = "Hello! I'm interested in your properties. Please share
 
 const residentialProjects = [
   { label: "New City Palace", location: "Pushpak Nagar, Navi Mumbai", slug: "project-1" },
-  { label: "Unique Apartment", location: "Pushpak Nagar, Navi Mumbai", slug: "project-2" },
-  { label: "Unique Palacio", location: "Pushpak Nagar", slug: "project-3" },
-  
+  { label: "Gajanan Enclave", location: "Pushpak Nagar, Navi Mumbai", slug: "project-2" },
+  { label: "Unique Palacio", location: "Pushpak Nagar, Navi Mumbai", slug: "project-3" },
+  { label: "Unique Apartment", location: "Ulwe, Navi Mumbai", slug: "project-4" },
+  { label: "Ravi Apartment", location: "Karanjade, Pushpak Node", slug: "project-5" },
+  { label: "Happy Apartment", location: "Khalapur, Rees", slug: "project-6" },
+  { label: "Unique Aura", location: "Pushpak Nagar", slug: "project-7" },
 ];
 
 /* Open WhatsApp in new tab */

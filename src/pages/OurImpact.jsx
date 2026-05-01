@@ -1,370 +1,712 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
-const OurImpact = () => {
-    const [openDownload, setOpenDownload] = useState(null);
+// ── Global Styles ──────────────────────────────────────────────────────────
+const GlobalStyles = () => (
+    <style>{`
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
 
-    const toggleDownload = (index) => {
-        setOpenDownload(openDownload === index ? null : index);
-    };
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      width: 100%;
+      overflow-x: hidden;
+    }
 
-    const recognitions = [
-        {
-            title: "First Real Estate Company in India",
-            desc: "to have SBTi validated Net-Zero Targets (both near and long term)",
-        },
-        {
-            title: "Ranked 1st in India",
-            desc: "with the 6th highest score out of 500 Global Real Estate Development companies in the S&P Global Corporate Sustainability Assessment 2024. Member of Dow Jones Sustainability Indices",
-        },
-        {
-            title: "Ranked 1st in Asia",
-            desc: "with a perfect score of 100/100 in the Residential Development Benchmark category at Global Real Estate Sustainability Benchmark 2024 (GRESB)",
-        },
-        {
-            title: "Ranked 1st in India and 5th in Asia",
-            desc: "with a 5-star rating and a score of 94/100 in GRESB Standing Investments Benchmark 2024",
-        },
-    ];
+    .font-display { font-family: 'Cormorant Garamond', Georgia, serif; }
 
-    const downloads = [
-        "Environment Policies",
-        "Social Policies",
-        "Governance Policies",
-        "Sustainability Reports",
-        "Certifications",
-    ];
+    @keyframes slowZoom {
+      from { transform: scale(1.05); }
+      to   { transform: scale(1.12); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
 
-    const partnerships = [
-        {
-            title: "Unique Net Zero Urban Accelerator",
-            desc: "Launched Unique Net Zero Urban Accelerator in partnership with RMI in 2022",
-        },
-        {
-            title: "Bytrees Build Ahead",
-            desc: "Part of Bytrees Build Ahead — a business-led coalition, dedicated to collectively tackling the challenge of achieving a net-zero built environment",
-        },
-        {
-            title: "WRI Signatory",
-            desc: "Signatory to WRI led business charter, value-chain approach to decarbonizing the building and construction sector in India",
-        },
-    ];
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #f5f5f4; }
+    ::-webkit-scrollbar-thumb { background: #a7b8a0; border-radius: 3px; }
+  `}</style>
+);
 
+// ── InView Hook ───────────────────────────────────────────────────────────
+function useInView(threshold = 0.12) {
+    const ref = useRef(null);
+    const [visible, setVisible] = useState(false);
+    useEffect(() => {
+        const obs = new IntersectionObserver(
+            ([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } },
+            { threshold }
+        );
+        if (ref.current) obs.observe(ref.current);
+        return () => obs.disconnect();
+    }, [threshold]);
+    return [ref, visible];
+}
+
+// ── Reveal Wrapper ────────────────────────────────────────────────────────
+function Reveal({ children, delay = 0, className = "" }) {
+    const [ref, visible] = useInView();
     return (
-        <div className="font-sans bg-white text-gray-800 overflow-x-hidden">
-            {/* ── Hero ── */}
-            <section className="relative h-[60vh] md:h-[75vh] overflow-hidden">
-                <img
-                    src="https://images.unsplash.com/photo-1448375240586-882707db888b?w=1600&q=80"
-                    alt="Nature canopy hero"
-                    className="absolute inset-0 w-full h-full object-cover scale-105"
-                    style={{ animation: "slowZoom 20s ease-in-out infinite alternate" }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-green-900/30 via-transparent to-white" />
-                <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-center px-4">
-                    <span className="inline-block bg-white/90 backdrop-blur-sm text-green-800 text-xs font-semibold tracking-[0.25em] uppercase px-5 py-2 rounded-full shadow-lg">
-                        Sustainability &amp; ESG
+        <div
+            ref={ref}
+            className={className}
+            style={{
+                opacity: visible ? 1 : 0,
+                transform: visible ? "translateY(0)" : "translateY(28px)",
+                transition: `opacity 0.7s ease ${delay}ms, transform 0.7s ease ${delay}ms`,
+            }}
+        >
+            {children}
+        </div>
+    );
+}
+
+// ── Shared UI Atoms ───────────────────────────────────────────────────────
+function SectionLabel({ children, light = false }) {
+    return (
+        <span
+            className={`inline-block tracking-[0.25em] text-[10px] uppercase font-semibold mb-3 ${light ? "text-emerald-300" : "text-emerald-700"
+                }`}
+        >
+            {children}
+        </span>
+    );
+}
+
+function SectionHeading({ children, light = false }) {
+    return (
+        <h2
+            className={`font-display text-3xl sm:text-4xl lg:text-5xl leading-tight mb-4 ${light ? "text-white" : "text-stone-800"
+                }`}
+        >
+            {children}
+        </h2>
+    );
+}
+
+// ── DATA ──────────────────────────────────────────────────────────────────
+const ENV_CARDS = [
+    {
+        img: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=700&q=80",
+        tag: "Decarbonisation",
+        title: "Low-Carbon Transition",
+        desc: "Our decarbonisation initiatives are designed to lead the transition to a low-carbon future for the real estate industry.",
+    },
+    {
+        img: "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=700&q=80",
+        tag: "Climate Resilience",
+        title: "Water & Biodiversity",
+        desc: "Resilience initiatives focus on water resilience, biodiversity and asset safety; mitigating future climate risks.",
+    },
+    {
+        img: "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=700&q=80",
+        tag: "Net Zero",
+        title: "Net Zero Urban Accelerator",
+        desc: "The Unique Builders & Developers Net Zero Urban Accelerator, in partnership with US-based think tank RMI, is a pioneering platform for change.",
+    },
+];
+
+const SOCIAL_CARDS = [
+    {
+        img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=700&q=80",
+        tag: "Community Development",
+        // title: "Unnati Programme",
+        desc: "We aim to create projects that foster safe, inclusive, and vibrant communities. From thoughtful planning to sustainable practices, every development is designed to enhance quality of life.",
+    },
+    {
+        img: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=700&q=80",
+        tag: "Sustainable Living",
+        // title: "Unique Genius Programme",
+        desc: "We are working towards integrating eco-friendly practices such as green spaces, efficient resource usage, and environmentally conscious construction methods in our future projects.",
+    },
+    {
+        img: "https://images.unsplash.com/photo-1547347298-4074fc3086f0?w=700&q=80",
+        tag: "Our Commitment",
+        // title: "Access to Quality Sport",
+        desc: "As a growing brand, Unique Builders & Developers is dedicated to gradually expanding its social initiatives and making a meaningful difference in the communities we serve.",
+    },
+];
+
+const RECOGNITIONS = [
+    {
+        rank: "#1",
+        label: "CREDAI BANM Trusted Builder of the Year, 2024 🏆",
+        // sub: "to have SBTi validated Net-Zero Targets (both near and long term)",
+        color: "from-emerald-50 to-teal-50",
+        accent: "text-emerald-700",
+    },
+    {
+        rank: "#2",
+        label: "Quality construction, timely delivery, and customer trust 🏆",
+        // sub: "Global Real Estate Development companies in the S&P Global Corporate Sustainability Assessment 2024. Member of Dow Jones Sustainability Indices",
+        color: "from-amber-50 to-yellow-50",
+        accent: "text-amber-700",
+    },
+    {
+        rank: "#3",
+        label: "Strong presence in Raigad and beyond 🏆",
+        // sub: "with a perfect score in the Residential Development Benchmark category at Global Real Estate Sustainability Benchmark 2024 (GRESB)",
+        color: "from-sky-50 to-blue-50",
+        accent: "text-sky-700",
+    },
+    {
+        rank: "#4",
+        label: "Consistently upholding transparency, integrity, and excellence 🏆",
+        // sub: "with a 5-star rating and a score in GRESB Standing Investments Benchmark 2024",
+        color: "from-rose-50 to-pink-50",
+        accent: "text-rose-700",
+    },
+    {
+        rank: "#5",
+        label: "Delivering homes that create lasting value and pride 🏆",
+        // sub: "with a 5-star rating and a score in GRESB Standing Investments Benchmark 2024",
+        color: "from-rose-50 to-pink-50",
+        accent: "text-rose-700",
+    },
+];
+
+const PARTNERSHIPS = [
+    {
+        icon: "🌿",
+        title: "Green Living Initiatives",
+        desc: "We integrate natural ventilation, green landscapes, and energy-conscious design to create healthier and more sustainable living spaces.",
+    },
+    {
+        icon: "🏗️",
+        title: "Responsible Construction",
+        desc: "Focused on efficient material usage, reduced construction waste, and quality-driven practices to ensure long-lasting and environmentally mindful developments.",
+    },
+    {
+        icon: "💧",
+        title: "Water & Resource Management",
+        desc: "Encouraging smart water usage, drainage planning, and resource-efficient systems across our projects to support sustainable urban living.",
+    },
+    {
+        icon: "🌇",
+        title: "Community-Centric Planning",
+        desc: "Designing spaces that promote open areas, safety, and community interaction—enhancing everyday living experiences for residents.",
+    },
+    {
+        icon: "📈",
+        title: "Future Sustainability Goals",
+        desc: "We are actively exploring green building practices and sustainable innovations to align with future-ready development standards.",
+    },
+    {
+        icon: "🤝",
+        title: "Ethical Development Approach",
+        desc: "Committed to transparency, fair practices, and building trust with every stakeholder through responsible business conduct.",
+    }
+]
+
+
+const BLOGS = [
+    {
+        img: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=700&q=80",
+        tag: "Sustainability",
+        title: "At Unique Builders & Developers, sustainability is an evolving commitment. We focus on creating developments that are efficient, future-ready, and mindful of long-term impact.",
+        // author: "Dr. Prasad Manepalli, Unique Builders & Developers",
+        date: "April 2025",
+    },
+    {
+        img: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=700&q=80",
+        tag: "Environment",
+        title: "We aim to reduce environmental impact by adopting conscious planning and construction methods.",
+        // author: "Unique Sustainability Team",
+        date: "March 2025",
+    },
+    {
+        img: "https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=700&q=80",
+        tag: "Social",
+        title: "We believe real estate should enhance the lives of people—not just provide structures.",
+        // author: "Unique Foundation",
+        date: "February 2025",
+    },
+];
+
+// ── Reusable container ─────────────────────────────────────────────────────
+function Container({ children, className = "" }) {
+    return (
+        <div
+            style={{ width: "100%", maxWidth: "1152px", marginLeft: "auto", marginRight: "auto", paddingLeft: "1.5rem", paddingRight: "1.5rem" }}
+            className={className}
+        >
+            {children}
+        </div>
+    );
+}
+
+// ── HERO ──────────────────────────────────────────────────────────────────
+function Hero() {
+    return (
+        <section
+            style={{ position: "relative", width: "100%", height: "70vh", minHeight: "480px", overflow: "hidden" }}
+        >
+            <img
+                src="https://images.unsplash.com/photo-1448375240586-882707db888b?w=1600&q=85"
+                alt="Nature canopy"
+                style={{
+                    position: "absolute", inset: 0, width: "100%", height: "100%",
+                    objectFit: "cover", objectPosition: "center",
+                    animation: "slowZoom 18s ease-in-out infinite alternate",
+                }}
+            />
+            <div
+                style={{
+                    position: "absolute", inset: 0,
+                    background: "linear-gradient(to bottom, rgba(0,0,0,0.2), transparent 40%, rgba(15,10,5,0.72))",
+                }}
+            />
+            <div
+                style={{
+                    position: "absolute", inset: 0,
+                    display: "flex", flexDirection: "column",
+                    alignItems: "center", justifyContent: "flex-end",
+                    paddingBottom: "4rem", paddingLeft: "1.5rem", paddingRight: "1.5rem",
+                    textAlign: "center",
+                }}
+            >
+                <div style={{ animation: "fadeUp 1s ease 0.3s both", maxWidth: "640px", width: "100%" }}>
+                    <span
+                        style={{
+                            display: "inline-block", letterSpacing: "0.3em",
+                            fontSize: "11px", textTransform: "uppercase",
+                            color: "#6ee7b7", fontWeight: 600, marginBottom: "0.75rem",
+                        }}
+                    >
+                        ESG · Sustainability
                     </span>
+                    <h1
+                        className="font-display"
+                        style={{ fontSize: "clamp(2.25rem, 6vw, 3.75rem)", color: "#fff", lineHeight: 1.15 }}
+                    >
+                        Our Impact
+                    </h1>
+                    <p
+                        style={{
+                            marginTop: "1rem", color: "#d6d3d1",
+                            fontSize: "clamp(0.875rem, 2vw, 1rem)", lineHeight: 1.7,
+                            maxWidth: "480px", marginLeft: "auto", marginRight: "auto",
+                        }}
+                    >
+                        Creating a better world through environmental stewardship, social
+                        empowerment, and responsible governance.
+                    </p>
                 </div>
-                <style>{`
-          @keyframes slowZoom { from { transform: scale(1); } to { transform: scale(1.08); } }
-          @keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
-          .fade-up { animation: fadeUp 0.7s ease both; }
-        `}</style>
-            </section>
+            </div>
+        </section>
+    );
+}
 
-            {/* ── Creating a Positive Impact ── */}
-            <section className="max-w-3xl mx-auto px-6 py-16 text-center fade-up">
-                <h2 className="text-3xl md:text-4xl font-light tracking-tight text-gray-900 mb-6">
-                    Creating a Positive Impact
-                </h2>
-                <p className="text-gray-500 leading-relaxed text-sm md:text-base mb-4">
-                    Unique Builders &amp; Developers is committed to using our capabilities to create a
-                    positive impact on the environment and on society. As we grow, so does the scale of
-                    the impact we can make.
-                </p>
-                <p className="text-gray-500 leading-relaxed text-sm md:text-base mb-8">
-                    Through the{" "}
-                    <span className="font-semibold text-green-700">Unique Foundation</span>, we implement
-                    transformative projects in Education, Women's Empowerment, and Sustainable Urbanisation
-                    to create a positive impact on the environment and society. We are recognised in global
-                    sustainability indices and rankings for the work we do to address the environmental
-                    impact of the built environment.
-                </p>
-                <a
-                    href="#"
-                    className="inline-block border border-gray-400 text-gray-700 text-xs tracking-widest uppercase px-8 py-3 hover:bg-green-700 hover:border-green-700 hover:text-white transition-all duration-300"
+// ── INTRO ─────────────────────────────────────────────────────────────────
+function Intro() {
+    return (
+        <section style={{ width: "100%", background: "#fff", padding: "5rem 0" }}>
+            <Container>
+                <Reveal>
+                    <div style={{ textAlign: "center", maxWidth: "720px", marginLeft: "auto", marginRight: "auto" }}>
+                        <SectionLabel>Creating a Positive Impact</SectionLabel>
+                        <SectionHeading>Committed to a sustainable future</SectionHeading>
+                        <p style={{ color: "#78716c", fontSize: "clamp(1rem, 2vw, 1.125rem)", lineHeight: 1.8 }}>
+                            Unique Builders & Developers is committed to using our capabilities to
+                            create a positive impact on the environment and on society. As we grow,
+                            so does the scale of the impact we can make. Through{" "}
+                            <span style={{ color: "#047857", fontWeight: 500 }}>Unique Foundation</span>
+                            , we implement transformative projects in Education, Women's Empowerment,
+                            and Sustainable Urbanisation.
+                        </p>
+                    </div>
+                </Reveal>
+            </Container>
+        </section>
+    );
+}
+
+// ── IMPACT CARD ───────────────────────────────────────────────────────────
+function ImpactCard({ img, tag, title, desc, delay }) {
+    return (
+        <Reveal
+            delay={delay}
+            className="group"
+            style={{ width: "100%" }}
+        >
+            <div
+                style={{
+                    borderRadius: "1rem", overflow: "hidden", background: "#fff",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.07)",
+                    transition: "box-shadow 0.4s ease",
+                    height: "100%",
+                }}
+                onMouseEnter={e => e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,0.12)"}
+                onMouseLeave={e => e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.07)"}
+            >
+                <div style={{ overflow: "hidden", height: "220px" }}>
+                    <img
+                        src={img}
+                        alt={title}
+                        style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.7s ease" }}
+                        onMouseEnter={e => e.currentTarget.style.transform = "scale(1.06)"}
+                        onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
+                    />
+                </div>
+                <div style={{ padding: "1.5rem" }}>
+                    <span
+                        style={{
+                            display: "block", fontSize: "10px", letterSpacing: "0.15em",
+                            textTransform: "uppercase", fontWeight: 700, color: "#059669",
+                            marginBottom: "0.5rem",
+                        }}
+                    >
+                        {tag}
+                    </span>
+                    <h3
+                        className="font-display"
+                        style={{ fontSize: "1.2rem", color: "#1c1917", marginBottom: "0.5rem", lineHeight: 1.3 }}
+                    >
+                        {title}
+                    </h3>
+                    <p style={{ color: "#78716c", fontSize: "0.875rem", lineHeight: 1.7 }}>{desc}</p>
+                </div>
+            </div>
+        </Reveal>
+    );
+}
+
+// ── ENVIRONMENTAL IMPACT ──────────────────────────────────────────────────
+function EnvironmentalImpact() {
+    return (
+        <section id="environmental" style={{ width: "100%", background: "#fafaf9", padding: "5rem 0" }}>
+            <Container>
+                <Reveal>
+                    <div style={{ textAlign: "center", maxWidth: "600px", marginLeft: "auto", marginRight: "auto", marginBottom: "3rem" }}>
+                        <SectionLabel>Planet</SectionLabel>
+                        <SectionHeading>Environmental Impact</SectionHeading>
+                        <p style={{ color: "#78716c", fontSize: "clamp(0.875rem, 2vw, 1rem)", lineHeight: 1.75 }}>
+                            Our approach to sustainable construction focuses on reducing carbon
+                            emissions and creating assets resilient to future climate change.
+                        </p>
+                    </div>
+                </Reveal>
+                <div
+                    style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                        gap: "1.5rem",
+                        width: "100%",
+                    }}
                 >
-                    Our Integrated Report
-                </a>
-            </section>
+                    {ENV_CARDS.map((c, i) => (
+                        <ImpactCard key={i} {...c} delay={i * 120} />
+                    ))}
+                </div>
+            </Container>
+        </section>
+    );
+}
 
-            {/* ── Environmental Impact ── */}
-            <section className="bg-gray-50 py-16 px-6">
-                <div className="max-w-6xl mx-auto">
-                    <div className="text-center mb-10">
-                        <h2 className="text-3xl md:text-4xl font-light tracking-tight text-gray-900 mb-4">
-                            Environmental Impact
-                        </h2>
-                        <p className="text-gray-500 text-sm md:text-base max-w-2xl mx-auto">
-                            Our approach to sustainable construction focuses on reducing carbon emissions
-                            (decarbonisation) and on creating assets that will be resilient to future climate
-                            change (resilience).
+// ── SOCIAL IMPACT ─────────────────────────────────────────────────────────
+function SocialImpact() {
+    return (
+        <section id="social" style={{ width: "100%", background: "#fff", padding: "5rem 0" }}>
+            <Container>
+                <Reveal>
+                    <div style={{ textAlign: "center", maxWidth: "600px", marginLeft: "auto", marginRight: "auto", marginBottom: "3rem" }}>
+                        <SectionLabel>People</SectionLabel>
+                        <SectionHeading>Social Impact</SectionHeading>
+                        <p style={{ color: "#78716c", fontSize: "clamp(0.875rem, 2vw, 1rem)", lineHeight: 1.75 }}>
+                            At Unique Builders & Developers, we believe real estate is not just about structures—it’s about shaping communities and improving lives.
+                            As we grow, we are committed to contributing positively to society through responsible development and meaningful initiatives.
                         </p>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {[
-                            {
-                                img: "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800&q=80",
-                                label: "Decarbonisation",
-                                desc: "Our decarbonisation initiatives are designed to lead the transition to a low-carbon future for the real estate industry.",
-                            },
-                            {
-                                img: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
-                                label: "Resilience",
-                                desc: "Our resilience initiatives focus on water resilience, biodiversity and asset safety; mitigating future climate risks.",
-                            },
-                            {
-                                img: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=800&q=80",
-                                label: "Net Zero Accelerator",
-                                desc: "The Unique Net Zero Urban Accelerator, in partnership with US-based think tank RMI, is a pioneering platform.",
-                            },
-                        ].map((item, i) => (
-                            <div
-                                key={i}
-                                className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-500"
-                            >
-                                <div className="overflow-hidden h-52">
-                                    <img
-                                        src={item.img}
-                                        alt={item.label}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                                    />
-                                </div>
-                                <div className="p-5">
-                                    <span className="text-xs font-bold uppercase tracking-widest text-green-600">
-                                        {item.label}
-                                    </span>
-                                    <p className="text-gray-500 text-sm mt-2 leading-relaxed">{item.desc}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                </Reveal>
+                <div
+                    style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                        gap: "1.5rem",
+                        width: "100%",
+                    }}
+                >
+                    {SOCIAL_CARDS.map((c, i) => (
+                        <ImpactCard key={i} {...c} delay={i * 120} />
+                    ))}
                 </div>
-            </section>
+            </Container>
+        </section>
+    );
+}
 
-            {/* ── Social Impact ── */}
-            <section className="py-16 px-6">
-                <div className="max-w-6xl mx-auto">
-                    <div className="text-center mb-10">
-                        <h2 className="text-3xl md:text-4xl font-light tracking-tight text-gray-900 mb-4">
-                            Social Impact
-                        </h2>
-                        <p className="text-gray-500 text-sm md:text-base max-w-2xl mx-auto">
-                            Unique Builders &amp; Developers is committed to creating a positive impact on
-                            Indian society through programmes which support the nation's development. Our
-                            current areas of focus are Women's Empowerment and Education.
-                        </p>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {[
-                            {
-                                img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&q=80",
-                                label: "Women's Empowerment",
-                                desc: "Ummat, Unique's flagship Women's Economic Empowerment programme.",
-                            },
-                            {
-                                img: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&q=80",
-                                label: "Genius Programme",
-                                desc: "Unique Genius Programme, in partnership with Ashoka, nurtures young talent across India.",
-                            },
-                            {
-                                img: "https://images.unsplash.com/photo-1607237138185-eedd9c632b0b?w=800&q=80",
-                                label: "Nation Building",
-                                desc: "Unique Builders &amp; Developers is building the nation through access to quality education.",
-                            },
-                        ].map((item, i) => (
-                            <div
-                                key={i}
-                                className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-500"
-                            >
-                                <div className="overflow-hidden h-52">
-                                    <img
-                                        src={item.img}
-                                        alt={item.label}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                                    />
-                                </div>
-                                <div className="p-5">
-                                    <span className="text-xs font-bold uppercase tracking-widest text-emerald-600">
-                                        {item.label}
-                                    </span>
-                                    <p className="text-gray-500 text-sm mt-2 leading-relaxed">{item.desc}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* ── Recognition ── */}
-            <section className="bg-stone-900 text-white py-16 px-6">
-                <div className="max-w-6xl mx-auto">
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl md:text-4xl font-light tracking-tight mb-2">Recognition</h2>
-                        <p className="text-stone-400 text-sm tracking-widest uppercase">
+// ── RECOGNITION ───────────────────────────────────────────────────────────
+function Recognition() {
+    return (
+        <section
+            id="recognition"
+            style={{
+                width: "100%",
+                background: "linear-gradient(135deg, #1c1917 0%, #064e3b 100%)",
+                padding: "5rem 0",
+            }}
+        >
+            <Container>
+                <Reveal>
+                    <div style={{ textAlign: "center", maxWidth: "560px", marginLeft: "auto", marginRight: "auto", marginBottom: "3.5rem" }}>
+                        <SectionLabel light>Awards</SectionLabel>
+                        <SectionHeading light>Recognition</SectionHeading>
+                        <p style={{ color: "#a8a29e", fontSize: "clamp(0.875rem, 2vw, 1rem)" }}>
                             Leading in global sustainability benchmarks
                         </p>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {recognitions.map((r, i) => (
+                </Reveal>
+                <div
+                    style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                        gap: "1.25rem",
+                        width: "100%",
+                    }}
+                >
+                    {RECOGNITIONS.map((r, i) => (
+                        <Reveal key={i} delay={i * 100}>
                             <div
-                                key={i}
-                                className="border border-stone-700 rounded-xl p-6 hover:border-green-500 hover:bg-stone-800 transition-all duration-300 group"
+                                style={{
+                                    borderRadius: "1rem",
+                                    background: `linear-gradient(135deg, ${i === 0 ? "#ecfdf5, #f0fdfa"
+                                        : i === 1 ? "#fffbeb, #fefce8"
+                                            : i === 2 ? "#f0f9ff, #eff6ff"
+                                                : "#fff1f2, #fdf2f8"
+                                        })`,
+                                    padding: "1.5rem",
+                                    height: "100%",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: "0.75rem",
+                                }}
                             >
-                                <div className="w-8 h-1 bg-green-500 mb-4 group-hover:w-16 transition-all duration-300" />
-                                <p className="font-semibold text-sm text-green-400 mb-2">{r.title}</p>
-                                <p className="text-stone-400 text-xs leading-relaxed">{r.desc}</p>
+                                <span
+                                    className="font-display"
+                                    style={{
+                                        fontSize: "2.25rem",
+                                        fontWeight: 700,
+                                        color: i === 0 ? "#047857" : i === 1 ? "#b45309" : i === 2 ? "#0369a1" : "#be123c",
+                                    }}
+                                >
+                                    {r.rank}
+                                </span>
+                                <p style={{ fontWeight: 600, fontSize: "0.875rem", color: "#1c1917", lineHeight: 1.4 }}>
+                                    {r.label}
+                                </p>
+                                <p style={{ fontSize: "0.75rem", color: "#78716c", lineHeight: 1.6, flex: 1 }}>
+                                    {r.sub}
+                                </p>
                             </div>
-                        ))}
-                    </div>
+                        </Reveal>
+                    ))}
                 </div>
-            </section>
+            </Container>
+        </section>
+    );
+}
 
-            {/* ── Partnerships ── */}
-            <section className="py-16 px-6 bg-green-50">
-                <div className="max-w-6xl mx-auto">
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl md:text-4xl font-light tracking-tight text-gray-900 mb-2">
-                            Partnerships
-                        </h2>
-                        <p className="text-gray-500 text-sm tracking-wide">
+// ── PARTNERSHIPS ──────────────────────────────────────────────────────────
+function Partnerships() {
+    return (
+        <section id="partnerships" style={{ width: "100%", background: "#fafaf9", padding: "5rem 0" }}>
+            <Container>
+                <Reveal>
+                    <div style={{ textAlign: "center", maxWidth: "520px", marginLeft: "auto", marginRight: "auto", marginBottom: "3.5rem" }}>
+                        <SectionLabel>Collaborations</SectionLabel>
+                        <SectionHeading>Partnerships</SectionHeading>
+                        <p style={{ color: "#78716c", fontSize: "clamp(0.875rem, 2vw, 1rem)" }}>
                             Strategic partnerships to lead the change in the industry
                         </p>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {partnerships.map((p, i) => (
+                </Reveal>
+                <div
+                    style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+                        gap: "2rem",
+                        width: "100%",
+                    }}
+                >
+                    {PARTNERSHIPS.map((p, i) => (
+                        <Reveal key={i} delay={i * 120}>
                             <div
-                                key={i}
-                                className="bg-white rounded-xl p-8 shadow-sm hover:shadow-lg transition-shadow duration-300 border-t-4 border-green-600"
+                                style={{
+                                    display: "flex", flexDirection: "column", gap: "1rem",
+                                    padding: "2rem", borderRadius: "1rem",
+                                    background: "#fff", border: "1px solid #e7e5e4",
+                                    height: "100%",
+                                    transition: "box-shadow 0.3s ease",
+                                }}
+                                onMouseEnter={e => e.currentTarget.style.boxShadow = "0 12px 30px rgba(0,0,0,0.09)"}
+                                onMouseLeave={e => e.currentTarget.style.boxShadow = "none"}
                             >
-                                <div className="text-green-600 text-3xl font-bold mb-3">
-                                    {String(i + 1).padStart(2, "0")}
-                                </div>
-                                <h3 className="font-semibold text-gray-900 mb-3 text-sm">{p.title}</h3>
-                                <p className="text-gray-500 text-sm leading-relaxed">{p.desc}</p>
+                                <span style={{ fontSize: "2.25rem" }}>{p.icon}</span>
+                                <h3 className="font-display" style={{ fontSize: "1.15rem", color: "#1c1917", lineHeight: 1.35 }}>
+                                    {p.title}
+                                </h3>
+                                <p style={{ color: "#78716c", fontSize: "0.875rem", lineHeight: 1.7 }}>{p.desc}</p>
                             </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* ── Downloads ── */}
-            <section className="py-16 px-6 max-w-4xl mx-auto">
-                <h2 className="text-3xl md:text-4xl font-light tracking-tight text-gray-900 text-center mb-10">
-                    Downloads
-                </h2>
-                <div className="divide-y divide-gray-200 border-t border-b border-gray-200">
-                    {downloads.map((item, i) => (
-                        <div key={i}>
-                            <button
-                                onClick={() => toggleDownload(i)}
-                                className="w-full flex items-center justify-between py-5 px-2 text-left group hover:bg-gray-50 transition-colors duration-200"
-                            >
-                                <span className="text-gray-700 text-sm font-medium group-hover:text-green-700 transition-colors">
-                                    {item}
-                                </span>
-                                <svg
-                                    className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${openDownload === i ? "rotate-180 text-green-600" : ""
-                                        }`}
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
-                            {openDownload === i && (
-                                <div className="px-2 pb-5 text-gray-500 text-sm">
-                                    <p className="mb-3">
-                                        Download our latest {item.toLowerCase()} documents and reports.
-                                    </p>
-                                    <a
-                                        href="#"
-                                        className="inline-flex items-center gap-2 text-green-700 font-medium text-xs hover:underline"
-                                    >
-                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                        </svg>
-                                        Download PDF
-                                    </a>
-                                </div>
-                            )}
-                        </div>
+                        </Reveal>
                     ))}
                 </div>
-            </section>
+            </Container>
+        </section>
+    );
+}
 
-            {/* ── Blog ── */}
-            <section className="bg-gray-50 py-16 px-6">
-                <div className="max-w-6xl mx-auto">
-                    <h2 className="text-3xl md:text-4xl font-light tracking-tight text-gray-900 text-center mb-10">
-                        Blogs
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {[
-                            {
-                                img: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&q=80",
-                                tag: "Environment",
-                                title: "Embodied carbon in high rise buildings – Insights from a baselining study",
-                                author: "Dr. Prasad Mangipudi & Aun Abdullah, Unique Builders & Developers",
-                            },
-                            {
-                                img: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80",
-                                tag: "Social",
-                                title: "Women in real estate: Bridging the gender gap in India's construction sector",
-                                author: "Unique Foundation Research Team",
-                            },
-                            {
-                                img: "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&q=80",
-                                tag: "Governance",
-                                title: "Net-zero pathways: How Indian developers can lead the global transition",
-                                author: "Unique Builders &amp; Developers Sustainability Office",
-                            },
-                        ].map((blog, i) => (
-                            <article
-                                key={i}
-                                className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer"
+
+// ── BLOGS ─────────────────────────────────────────────────────────────────
+function Blogs() {
+    return (
+        <section id="blogs" style={{ width: "100%", background: "#fafaf9", padding: "5rem 0" }}>
+            <Container>
+                <Reveal>
+                    <div style={{ textAlign: "center", maxWidth: "480px", marginLeft: "auto", marginRight: "auto", marginBottom: "3.5rem" }}>
+                        <SectionLabel>Insights</SectionLabel>
+                        <SectionHeading>Blogs</SectionHeading>
+                    </div>
+                </Reveal>
+                <div
+                    style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                        gap: "2rem",
+                        width: "100%",
+                    }}
+                >
+                    {BLOGS.map((b, i) => (
+                        <Reveal key={i} delay={i * 120}>
+                            <div
+                                style={{ cursor: "pointer" }}
+                                onMouseEnter={e => {
+                                    e.currentTarget.querySelector("h3").style.color = "#047857";
+                                    e.currentTarget.querySelector("img").style.transform = "scale(1.06)";
+                                }}
+                                onMouseLeave={e => {
+                                    e.currentTarget.querySelector("h3").style.color = "#1c1917";
+                                    e.currentTarget.querySelector("img").style.transform = "scale(1)";
+                                }}
                             >
-                                <div className="overflow-hidden h-48">
+                                <div style={{ borderRadius: "1rem", overflow: "hidden", aspectRatio: "4/3", marginBottom: "1rem" }}>
                                     <img
-                                        src={blog.img}
-                                        alt={blog.title}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                        src={b.img}
+                                        alt={b.title}
+                                        style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.7s ease", display: "block" }}
                                     />
                                 </div>
-                                <div className="p-5">
-                                    <span className="inline-block text-xs font-bold uppercase tracking-widest text-green-600 mb-2">
-                                        {blog.tag}
-                                    </span>
-                                    <h3 className="font-semibold text-gray-900 text-sm leading-snug mb-3 group-hover:text-green-700 transition-colors">
-                                        {blog.title}
-                                    </h3>
-                                    <p className="text-gray-400 text-xs">{blog.author}</p>
-                                </div>
-                            </article>
-                        ))}
-                    </div>
+                                <span
+                                    style={{
+                                        display: "block", fontSize: "10px", letterSpacing: "0.15em",
+                                        textTransform: "uppercase", fontWeight: 700, color: "#059669",
+                                        marginBottom: "0.5rem",
+                                    }}
+                                >
+                                    {b.tag}
+                                </span>
+                                <h3
+                                    className="font-display"
+                                    style={{ fontSize: "1.15rem", color: "#1c1917", lineHeight: 1.4, marginBottom: "0.5rem", transition: "color 0.3s" }}
+                                >
+                                    {b.title}
+                                </h3>
+                                <p style={{ color: "#a8a29e", fontSize: "0.75rem" }}>By {b.author} · {b.date}</p>
+                            </div>
+                        </Reveal>
+                    ))}
                 </div>
-            </section>
-
-            {/* ── Footer Strip ── */}
-            <div className="bg-green-800 text-white text-center py-8 px-6">
-                <p className="text-sm tracking-wide opacity-80">
-                    © {new Date().getFullYear()} Unique Builders &amp; Developers. All rights reserved.
-                </p>
-            </div>
-        </div>
+                <Reveal>
+                    <div style={{ textAlign: "center", marginTop: "3rem" }}>
+                        <a
+                            href="#"
+                            style={{
+                                display: "inline-flex", alignItems: "center", gap: "0.5rem",
+                                border: "1px solid #d6d3d1", color: "#57534e",
+                                padding: "0.75rem 1.75rem", borderRadius: "9999px",
+                                fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase",
+                                fontWeight: 600, textDecoration: "none",
+                                transition: "all 0.3s ease",
+                            }}
+                            onMouseEnter={e => { e.currentTarget.style.borderColor = "#059669"; e.currentTarget.style.color = "#047857"; }}
+                            onMouseLeave={e => { e.currentTarget.style.borderColor = "#d6d3d1"; e.currentTarget.style.color = "#57534e"; }}
+                        >
+                            View All Articles
+                        </a>
+                    </div>
+                </Reveal>
+            </Container>
+        </section>
     );
-};
+}
 
-export default OurImpact;
+// ── FOOTER CTA ────────────────────────────────────────────────────────────
+function FooterCTA() {
+    return (
+        <section
+            style={{
+                width: "100%",
+                background: "linear-gradient(135deg, #065f46 0%, #047857 100%)",
+                padding: "6rem 0",
+                position: "relative",
+                overflow: "hidden",
+            }}
+        >
+            {/* Dot pattern overlay */}
+            <div
+                style={{
+                    position: "absolute", inset: 0, opacity: 0.08,
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='1.5' fill='%23fff'/%3E%3C/svg%3E")`,
+                }}
+            />
+            <Container>
+                <Reveal>
+                    <div style={{ textAlign: "center", maxWidth: "600px", marginLeft: "auto", marginRight: "auto", position: "relative", zIndex: 1 }}>
+                        <SectionLabel light>Join Us</SectionLabel>
+                        <SectionHeading light>Together, we can build a better tomorrow</SectionHeading>
+                        <p style={{ color: "#a7f3d0", fontSize: "clamp(0.875rem, 2vw, 1rem)", lineHeight: 1.75, marginBottom: "2rem" }}>
+                            Explore how Unique Builders & Developers is setting new benchmarks
+                            in sustainable development and creating lasting positive change.
+                        </p>
+                        <a
+                            href="#"
+                            style={{
+                                display: "inline-flex", alignItems: "center", gap: "0.5rem",
+                                background: "#fff", color: "#064e3b",
+                                padding: "1rem 2rem", borderRadius: "9999px",
+                                fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase",
+                                fontWeight: 700, textDecoration: "none",
+                                boxShadow: "0 8px 24px rgba(0,0,0,0.18)",
+                                transition: "background 0.3s ease",
+                            }}
+                            onMouseEnter={e => e.currentTarget.style.background = "#ecfdf5"}
+                            onMouseLeave={e => e.currentTarget.style.background = "#fff"}
+                        >
+                            Download Integrated Report
+                        </a>
+                    </div>
+                </Reveal>
+            </Container>
+        </section>
+    );
+}
+
+// ── ROOT ──────────────────────────────────────────────────────────────────
+export default function OurImpact() {
+    return (
+        <>
+            <GlobalStyles />
+            <div style={{ width: "100%", minHeight: "100vh", background: "#fff", overflowX: "hidden" }}>
+                <Hero />
+                <Intro />
+                <EnvironmentalImpact />
+                <SocialImpact />
+                <Recognition />
+                <Partnerships />
+                <Blogs />
+                <FooterCTA />
+            </div>
+        </>
+    );
+}

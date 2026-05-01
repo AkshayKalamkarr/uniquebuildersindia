@@ -22,7 +22,7 @@ const STORY_SECTIONS = [
     {
         tag: "OUR STORY",
         headline: "A legacy of excellence",
-        body: "At Unique, our legacy of excellence is forged by the pioneering spirit of our talented team, the partnerships we cultivate with world-class collaborators, and the dynamic processes that consistently propel us beyond conventional boundaries.",
+        body: "With over 20 years of experience, Unique Builders & Developers has built a reputation for quality, trust, and thoughtful development—delivering spaces designed for lasting value and modern living.",
         img: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=900&q=80",
         imgAlt: "Iconic skyscraper at dusk",
         layout: "img-left",
@@ -30,7 +30,7 @@ const STORY_SECTIONS = [
     {
         tag: "",
         headline: "Crafting timeless elegance",
-        body: "We hold an unwavering belief that quality is not just a destination, but an ongoing voyage. Each residence we create is meticulously designed to surpass expectations at every conceivable touchpoint. At Unique, we nurture a culture of quality, employing innovative technologies and hand-selecting only the most exquisite materials.",
+        body: "We design and build homes with a focus on quality, detail, and lasting value—creating spaces that blend modern living with enduring elegance.",
         img: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=900&q=80",
         imgAlt: "Luxury interior living room",
         layout: "img-right",
@@ -38,7 +38,7 @@ const STORY_SECTIONS = [
     {
         tag: "",
         headline: "Sophistication on a grand scale",
-        body: "Unique crafts both residential and commercial real estate developments, catering to a discerning spectrum of lifestyle preferences, across several geographies.",
+        body: "We develop residential and commercial spaces designed for modern lifestyles—combining quality, functionality, and lasting value.",
         img: "https://images.unsplash.com/photo-1560185007-c5ca9d2c014d?w=900&q=80",
         imgAlt: "Luxury hotel lobby corridor",
         layout: "img-left",
@@ -283,7 +283,14 @@ function IntroSplit() {
                         Shaping Indian<br />real estate
                     </h2>
                     <p style={{ fontFamily: "'Jost',sans-serif", fontSize: 14, lineHeight: 1.8, color: "#5a4a38", maxWidth: 440 }}>
-                        As creators of the world's finest developments, Unique leverages four decades of experience to transform the way people live and work. We continue this with the expertise to deliver both quality and scale at a pace that is unmatched in the industry.
+                        At Unique Builders & Developers, we focus on creating thoughtfully designed residential and commercial spaces that reflect quality, functionality, and long-term value.
+
+                        Driven by a commitment to excellence, we aim to deliver developments that meet the evolving needs of modern urban lifestyles—balancing smart design, reliable construction, and attention to detail.
+
+                        Every project we undertake is guided by a clear vision:
+                        to build not just structures, but spaces where people can live, grow, and thrive.
+
+                        As a growing real estate brand, we continue to strengthen our capabilities, refine our processes, and explore new ways to deliver better living experiences with every development.
                     </p>
                 </FadeIn>
             </div>
