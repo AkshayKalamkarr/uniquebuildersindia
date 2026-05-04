@@ -704,8 +704,8 @@ export default function OurImpact() {
                 <SocialImpact />
                 <Recognition />
                 <Partnerships />
-                <Blogs />
-                <FooterCTA />
+                {/* <Blogs />
+                <FooterCTA /> */}
             </div>
         </>
     );

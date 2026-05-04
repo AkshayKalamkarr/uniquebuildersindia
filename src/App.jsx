@@ -8,6 +8,7 @@ import ProjectDetails from "./pages/ProjectDetails";
 import OurImpact from './pages/OurImpact'
 import { projects } from "./data/projects";
 import EnquiryForm from "./pages/EnquiryForm";
+import NaviMumbai from "./pages/NaviMumbai";
 
 function App() {
   return (
@@ -22,7 +23,7 @@ function App() {
         <Route path="/projects/:slug" element={<ProjectDetails />} />
         <Route path="/our-impact" element={<OurImpact />} />
         <Route path="/enquiry" element={<EnquiryForm />} />
-
+        <Route path="/navi-mumbai" element={<NaviMumbai />} />
       </Routes>
 
       {/* ✅ FOOTER */}
