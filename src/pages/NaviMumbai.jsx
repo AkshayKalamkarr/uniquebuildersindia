@@ -67,17 +67,12 @@ function BarChart({ data }) {
     );
 }
 
-/* ── skyline hero illustration ── */
-// function SkylineIllustration() {
-//     return (
-
-//     );
-// }
-
 /* ══════════════════════════════════════════════════════
    MAIN COMPONENT
 ══════════════════════════════════════════════════════ */
 export default function NaviMumbaiRising() {
+    const [hoveredImg, setHoveredImg] = useState(null);
+
     return (
         <div style={{
             background: "#FAFAF7",
@@ -177,6 +172,120 @@ export default function NaviMumbaiRising() {
         .nm-pulse { animation: nmPulse 2.6s ease-in-out infinite; }
         @keyframes nmPulse { 0%,100%{opacity:0.8;transform:scale(1)} 50%{opacity:0.4;transform:scale(1.5)} }
 
+        /* ── IMAGE SHOWCASE ── */
+        .nm-img-showcase {
+          display: grid;
+          grid-template-columns: 1.15fr 0.85fr;
+          gap: 20px;
+          align-items: stretch;
+        }
+
+        .nm-img-card {
+          position: relative;
+          border-radius: 24px;
+          overflow: hidden;
+          cursor: pointer;
+        }
+
+        .nm-img-card img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+          transition: transform 0.7s cubic-bezier(0.22,1,0.36,1);
+        }
+
+        .nm-img-card:hover img {
+          transform: scale(1.06);
+        }
+
+        .nm-img-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            to top,
+            rgba(13, 27, 62, 0.88) 0%,
+            rgba(13, 27, 62, 0.3) 45%,
+            rgba(13, 27, 62, 0.05) 100%
+          );
+          transition: opacity 0.4s ease;
+        }
+
+        .nm-img-card:hover .nm-img-overlay {
+          opacity: 0.92;
+        }
+
+        .nm-img-content {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          padding: 28px 28px 32px;
+          transform: translateY(0);
+          transition: transform 0.4s cubic-bezier(0.22,1,0.36,1);
+        }
+
+        .nm-img-detail {
+          opacity: 0;
+          transform: translateY(12px);
+          transition: opacity 0.4s ease 0.05s, transform 0.4s ease 0.05s;
+          margin-top: 10px;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 13px;
+          color: rgba(255,255,255,0.6);
+          line-height: 1.7;
+        }
+
+        .nm-img-card:hover .nm-img-detail {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        .nm-img-badge {
+          position: absolute;
+          top: 20px;
+          right: 20px;
+          background: rgba(212,160,23,0.9);
+          backdrop-filter: blur(8px);
+          border-radius: 100px;
+          padding: 6px 14px;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: #1A1A2E;
+        }
+
+        .nm-img-number {
+          position: absolute;
+          top: 20px;
+          left: 20px;
+          font-family: 'Bebas Neue', cursive;
+          font-size: 52px;
+          line-height: 1;
+          color: rgba(255,255,255,0.12);
+          pointer-events: none;
+          transition: color 0.4s;
+        }
+
+        .nm-img-card:hover .nm-img-number {
+          color: rgba(212,160,23,0.2);
+        }
+
+        .nm-img-line {
+          width: 36px;
+          height: 2px;
+          background: #D4A017;
+          border-radius: 2px;
+          margin-bottom: 10px;
+          transition: width 0.4s ease;
+        }
+
+        .nm-img-card:hover .nm-img-line {
+          width: 56px;
+        }
+
         /* ── RESPONSIVE ── */
         .nm-px { padding-left: clamp(20px, 7vw, 110px); padding-right: clamp(20px, 7vw, 110px); }
         .nm-section { padding-top: 96px; padding-bottom: 96px; }
@@ -239,11 +348,15 @@ export default function NaviMumbaiRising() {
           .nm-section { padding-top: 64px; padding-bottom: 64px; }
           .nm-hero-num { font-size: clamp(4.5rem, 20vw, 9rem); }
           .nm-summary-grid { grid-template-columns: 1fr !important; }
+          .nm-img-showcase { grid-template-columns: 1fr; }
+          .nm-img-card { min-height: 340px; }
         }
 
         @media (max-width: 560px) {
           .nm-hero-num { font-size: clamp(4rem, 22vw, 7rem); }
           .nm-section { padding-top: 48px; padding-bottom: 48px; }
+          .nm-img-card { min-height: 280px; }
+          .nm-img-content { padding: 20px 20px 24px; }
         }
       `}</style>
 
@@ -259,27 +372,20 @@ export default function NaviMumbaiRising() {
                 position: "relative",
                 overflow: "hidden"
             }}>
-                {/* Grid background */}
                 <div className="nm-grid-bg" style={{ position: "absolute", inset: 0, opacity: 0.7, pointerEvents: "none" }} />
-
-                {/* Glow orb */}
                 <div style={{ position: "absolute", right: "-60px", top: "5%", width: 560, height: 560, borderRadius: "50%", background: "radial-gradient(circle, rgba(212,160,23,0.07) 0%, transparent 70%)", pointerEvents: "none" }} />
 
                 <div className="nm-hero-grid" style={{ position: "relative", zIndex: 2, width: "100%" }}>
-                    {/* LEFT – text */}
                     <div>
                         <Reveal delay={0}>
                             <span className="nm-tag" style={{ marginBottom: 28, display: "inline-block" }}>A Comprehensive Perspective · 2026</span>
                         </Reveal>
-
                         <Reveal delay={100}>
                             <div className="nm-cormorant" style={{ fontSize: "clamp(1.1rem,2.5vw,1.8rem)", color: "#9CA3AF", fontStyle: "italic", marginBottom: 6 }}>Navi Mumbai</div>
                         </Reveal>
-
                         <Reveal delay={180}>
                             <div className="nm-hero-num">RISING</div>
                         </Reveal>
-
                         <Reveal delay={280}>
                             <div style={{ display: "flex", alignItems: "flex-start", gap: 18, marginTop: 32, marginBottom: 40 }}>
                                 <div style={{ width: 3, minWidth: 3, height: 80, background: "#D4A017", borderRadius: 2, marginTop: 4 }} />
@@ -288,8 +394,6 @@ export default function NaviMumbaiRising() {
                                 </p>
                             </div>
                         </Reveal>
-
-                        {/* Stat pills */}
                         <Reveal delay={380}>
                             <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
                                 {[
@@ -307,7 +411,6 @@ export default function NaviMumbaiRising() {
                         </Reveal>
                     </div>
 
-                    {/* RIGHT – skyline illustration */}
                     <Reveal delay={200}>
                         <div style={{
                             borderRadius: 24,
@@ -317,10 +420,7 @@ export default function NaviMumbaiRising() {
                             position: "relative",
                             aspectRatio: "4/3"
                         }}>
-                            {/* <SkylineIllustration /> */}
-                            <img src="/images/homepage/navimumbaiairport.jpg" alt="" />
-
-                            {/* Floating label */}
+                            <img src="/images/homepage/navimumbaiairport.jpg" alt="Navi Mumbai Airport" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                             <div style={{
                                 position: "absolute", bottom: 20, left: 20,
                                 background: "rgba(13,27,62,0.88)",
@@ -332,8 +432,6 @@ export default function NaviMumbaiRising() {
                                 <div className="nm-dm" style={{ fontSize: 10, color: "#9CA3AF", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 4 }}>Mumbai Metropolitan Region</div>
                                 <div className="nm-bebas nm-accent" style={{ fontSize: 18 }}>Mumbai 3.0 — The Next Chapter</div>
                             </div>
-
-                            {/* Animated dots */}
                             {[[68, 42], [82, 28], [72, 56]].map(([top, left], i) => (
                                 <div key={i} className="nm-pulse" style={{
                                     position: "absolute", top: `${top}%`, left: `${left}%`,
@@ -346,7 +444,6 @@ export default function NaviMumbaiRising() {
                     </Reveal>
                 </div>
 
-                {/* Side label */}
                 <div style={{
                     position: "absolute", right: "clamp(20px,4vw,50px)", top: "50%",
                     transform: "translateY(-50%) rotate(90deg)", transformOrigin: "right center",
@@ -392,6 +489,161 @@ export default function NaviMumbaiRising() {
                         </div>
                     </Reveal>
                 </div>
+            </section>
+
+            {/* ══════════════════════════════════════
+          IMAGE SHOWCASE — above Demographics
+      ══════════════════════════════════════ */}
+            <section className="nm-px" style={{ paddingBottom: 80, paddingTop: 0 }}>
+                <Reveal delay={0}>
+                    {/* Section label */}
+                    <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 28 }}>
+                        <div style={{ height: 1, flex: 1, background: "linear-gradient(90deg, #E5E5DC, transparent)" }} />
+                        <span className="nm-tag">City · Infrastructure · Vision</span>
+                        <div style={{ height: 1, flex: 1, background: "linear-gradient(270deg, #E5E5DC, transparent)" }} />
+                    </div>
+                </Reveal>
+
+                <div className="nm-img-showcase" style={{ height: "clamp(360px, 52vw, 580px)" }}>
+                    {/* IMAGE 1 — wider */}
+                    <Reveal delay={80} className="nm-img-card">
+                        <div
+                            className="nm-img-card"
+                            style={{ height: "100%", background: "#0D1B3E" }}
+                            onMouseEnter={() => setHoveredImg(0)}
+                            onMouseLeave={() => setHoveredImg(null)}
+                        >
+                            <img
+                                src="/images/homepage/atal-setu.png"
+                                alt="Navi Mumbai International Airport"
+                                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                            />
+                            <div className="nm-img-overlay" />
+
+                            {/* Large ghost number */}
+                            <div className="nm-img-number">01</div>
+
+                            {/* Top badge */}
+                            <div className="nm-img-badge">Atal Setu</div>
+
+                            {/* Bottom content */}
+                            <div className="nm-img-content">
+                                <div className="nm-img-line" />
+                                <div className="nm-bebas" style={{ fontSize: "clamp(22px, 3vw, 30px)", color: "#fff", lineHeight: 1.1, marginBottom: 4 }}>
+                                    Navi Mumbai to<br />
+                                    <span style={{ color: "#D4A017" }}>Mumbai Atal setu</span>
+                                </div>
+                                <div className="nm-img-detail">
+                                    The bridge you shared is Atal Setu, officially called the Mumbai Trans Harbour Link (MTHL) — one of India’s biggest infrastructure projects.
+                                </div>
+                                <div style={{
+                                    display: "flex", gap: 12, marginTop: 14, flexWrap: "wrap"
+                                }}>
+                                    {["₹17,840 Cr Investment", "2024 Opened", "Connects Sewri (Mumbai) → Chirle (Navi Mumbai)"].map(tag => (
+                                        <div key={tag} style={{
+                                            background: "rgba(212,160,23,0.18)",
+                                            border: "1px solid rgba(212,160,23,0.35)",
+                                            borderRadius: 100,
+                                            padding: "4px 12px",
+                                            fontFamily: "'DM Sans', sans-serif",
+                                            fontSize: 10,
+                                            fontWeight: 600,
+                                            color: "#D4A017",
+                                            letterSpacing: "0.08em",
+                                            whiteSpace: "nowrap"
+                                        }}>{tag}</div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </Reveal>
+
+                    {/* IMAGE 2 — narrower, with 2 stacked zones */}
+                    <Reveal delay={180}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 20, height: "100%" }}>
+                            {/* Top image card */}
+                            <div
+                                className="nm-img-card"
+                                style={{ flex: "1 1 55%", background: "#111827", minHeight: 0 }}
+                                onMouseEnter={() => setHoveredImg(1)}
+                                onMouseLeave={() => setHoveredImg(null)}
+                            >
+                                <img
+                                    src="/images/homepage/traintrans.jpg"
+                                    alt="Trans Harbour Link"
+                                    style={{
+                                        width: "100%", height: "100%", objectFit: "cover", display: "block",
+                                        filter: "hue-rotate(180deg) saturate(0.6) brightness(0.85)"
+                                    }}
+                                />
+                                <div className="nm-img-overlay" />
+                                <div className="nm-img-number" style={{ fontSize: 40 }}>02</div>
+                                <div className="nm-img-badge" style={{ fontSize: 9 }}>Sea Link</div>
+                                <div className="nm-img-content" style={{ padding: "18px 22px 22px" }}>
+                                    <div className="nm-img-line" />
+                                    <div className="nm-bebas" style={{ fontSize: "clamp(18px, 2.4vw, 24px)", color: "#fff", lineHeight: 1.1 }}>
+                                        Trans Harbour Link<br />
+                                        <span style={{ color: "#D4A017" }}>21.8 km Connectivity</span>
+                                    </div>
+                                    <div className="nm-img-detail" style={{ fontSize: 12 }}>
+                                        Mumbai to Navi Mumbai in just 20 minutes — cutting commute time by over 60%.
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Bottom stat banner */}
+                            <div style={{
+                                flex: "0 0 auto",
+                                background: "#1A1A2E",
+                                borderRadius: 20,
+                                padding: "22px 24px",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 0,
+                                border: "1px solid rgba(212,160,23,0.18)",
+                                position: "relative",
+                                overflow: "hidden"
+                            }}>
+                                {/* Decorative stripe */}
+                                <div style={{
+                                    position: "absolute", top: 0, left: 0, right: 0, height: 3,
+                                    background: "linear-gradient(90deg, #D4A017, rgba(212,160,23,0.2))"
+                                }} />
+                                <div style={{
+                                    position: "absolute", right: -20, bottom: -20,
+                                    width: 100, height: 100, borderRadius: "50%",
+                                    background: "rgba(212,160,23,0.06)"
+                                }} />
+
+                                {[
+                                    { val: "₹1L Cr", label: "Infra Pipeline" },
+                                    { val: "2026", label: "Metro Delivery" },
+                                    { val: "5+", label: "Corridors" },
+                                ].map((stat, i, arr) => (
+                                    <div key={stat.label} style={{ flex: 1, textAlign: "center", position: "relative" }}>
+                                        {i > 0 && (
+                                            <div style={{
+                                                position: "absolute", left: 0, top: "10%",
+                                                width: 1, height: "80%",
+                                                background: "rgba(255,255,255,0.08)"
+                                            }} />
+                                        )}
+                                        <div className="nm-bebas nm-accent" style={{ fontSize: "clamp(18px, 2.5vw, 24px)", lineHeight: 1 }}>{stat.val}</div>
+                                        <div className="nm-dm" style={{ fontSize: 9, letterSpacing: "0.1em", textTransform: "uppercase", color: "#6B7280", marginTop: 5 }}>{stat.label}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </Reveal>
+                </div>
+
+                {/* Scroll hint */}
+                <Reveal delay={300}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 28, paddingLeft: 4 }}>
+                        <div style={{ width: 28, height: 1, background: "#D4A017" }} />
+                        <span className="nm-dm" style={{ fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: "#9CA3AF" }}>Infrastructure · Connectivity · Growth</span>
+                    </div>
+                </Reveal>
             </section>
 
             {/* ══════════════════════════════════════
@@ -504,7 +756,6 @@ export default function NaviMumbaiRising() {
                 </Reveal>
 
                 <div className="nm-two-col-center">
-                    {/* Map SVG */}
                     <Reveal delay={100}>
                         <div className="nm-card-tinted" style={{ padding: 0, overflow: "hidden", borderRadius: 24 }}>
                             <svg viewBox="0 0 420 460" style={{ width: "100%", display: "block" }} xmlns="http://www.w3.org/2000/svg">
@@ -535,7 +786,6 @@ export default function NaviMumbaiRising() {
                         </div>
                     </Reveal>
 
-                    {/* Points */}
                     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                         {[
                             { num: "01", title: "Institutional Catalyst", body: "Educational and economic proposals bring jobs and investment, reducing dependency on Mumbai as the primary employment hub." },
@@ -619,7 +869,6 @@ export default function NaviMumbaiRising() {
                     </div>
                 </Reveal>
 
-                {/* Key Metrics */}
                 <div className="nm-stat-grid" style={{ marginBottom: 48 }}>
                     {[
                         { val: "32.7 MSF", label: "Grade A/A+ Stock" },
@@ -637,7 +886,6 @@ export default function NaviMumbaiRising() {
                     ))}
                 </div>
 
-                {/* North / South split + demand card */}
                 <Reveal delay={100}>
                     <div className="nm-split-card" style={{ marginBottom: 48 }}>
                         <div className="nm-card-dark nm-hover" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 24 }}>
@@ -663,7 +911,6 @@ export default function NaviMumbaiRising() {
                     </div>
                 </Reveal>
 
-                {/* Charts */}
                 <Reveal delay={160}>
                     <div className="nm-card" style={{ padding: 40 }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 40, flexWrap: "wrap", gap: 16 }}>
@@ -711,10 +958,8 @@ export default function NaviMumbaiRising() {
           YOUNG CITY / KEY HIGHLIGHTS
       ══════════════════════════════════════ */}
             <section style={{ background: "#1A1A2E", padding: "96px clamp(20px,7vw,110px)" }}>
-                {/* REIT strip */}
                 <Reveal>
                     <div style={{ display: "flex", alignItems: "center", gap: 28, marginBottom: 64, flexWrap: "wrap" }}>
-                        {/* Donut */}
                         <div style={{ position: "relative", width: 112, height: 112, flexShrink: 0 }}>
                             <div style={{
                                 width: 112, height: 112, borderRadius: "50%",
