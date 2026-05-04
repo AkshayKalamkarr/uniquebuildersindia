@@ -9,10 +9,13 @@ import OurImpact from './pages/OurImpact'
 import { projects } from "./data/projects";
 import EnquiryForm from "./pages/EnquiryForm";
 import NaviMumbai from "./pages/NaviMumbai";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   return (
     <Router>
+
+      <ScrollToTop />
 
       {/* ✅ HEADER */}
       <Navbar />
