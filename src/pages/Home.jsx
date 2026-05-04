@@ -8,22 +8,23 @@ import { Link, useNavigate } from 'react-router-dom'
 const BRAND = 'Unique builders & developers'
 
 const developments = [
-    { id: 1, name: 'New City Palace', location: 'Pushpak Nagar', img: '/images/newcitypalace413/1.jpeg', color: '#2c3e50', slug: 'project-1' },
-    { id: 2, name: 'Gajanan Enclave', location: 'Pushpak Nagar', img: '/images/gajananenclave357/1.jpg', color: '#1a3a4a', slug: 'project-2' },
-    { id: 3, name: 'Unique Palacio', location: 'Pushpak Nagar', img: '/images/uniquepalacio24/1.jpg', color: '#1a3a4a', slug: 'project-3' },
-    { id: 4, name: 'Unique Apartment', location: 'Ulwe', img: '/images/uniqueapartment420/1.jpg', color: '#1a3a4a', slug: 'project-4' },
-    { id: 5, name: 'Ravi Apartment', location: 'Karanjade, Pushpak Node', img: '/images/raviapartment141/raviapartment-5.jpg', color: '#1a3a4a', slug: 'project-5' },
-    { id: 6, name: 'Happy Apartment', location: 'Khalapur, Rees', img: '/images/happyappartment/2.jpg', color: '#1a3a4a', slug: 'project-6' },
-    { id: 7, name: 'Unique Aura', location: 'Pushpak Nagar', img: '/images/uniqueaura/unique-2.jpeg', color: '#1a3a4a', slug: 'project-7' },
+    { id: 1, name: 'New City Palace',  location: 'Pushpak Nagar',        img: '/images/newcitypalace413/1.jpeg',              color: '#2c3e50', slug: 'project-1', soldOut: 72 },
+    { id: 2, name: 'Gajanan Enclave',  location: 'Pushpak Nagar',        img: '/images/gajananenclave357/1.jpg',              color: '#1a3a4a', slug: 'project-2', soldOut: 50 },
+    { id: 3, name: 'Unique Palacio',   location: 'Pushpak Nagar',        img: '/images/uniquepalacio24/1.jpg',                color: '#1a3a4a', slug: 'project-3', soldOut: 30 },
+    { id: 4, name: 'Unique Apartment', location: 'Ulwe',                  img: '/images/uniqueapartment420/1.jpg',             color: '#1a3a4a', slug: 'project-4', soldOut: 88 },
+    { id: 5, name: 'Ravi Apartment',   location: 'Karanjade, Pushpak Node', img: '/images/raviapartment141/raviapartment-5.jpg', color: '#1a3a4a', slug: 'project-5', soldOut: 50 },
+    { id: 6, name: 'Happy Apartment',  location: 'Khalapur, Rees',       img: '/images/happyappartment/2.jpg',                color: '#1a3a4a', slug: 'project-6', soldOut: 30 },
+    { id: 7, name: 'Unique Aura',      location: 'Pushpak Nagar',        img: '/images/uniqueaura/unique-2.jpeg',             color: '#1a3a4a', slug: 'project-7', soldOut: 65 },
 ]
-const footerLeft = ['Our Story', 'Our Impact', 'Our Developments', 'Experiences', 'Signature Hospitality', 'Press Room', 'Awards', 'Blogs']
-const footerRight = ['NRI', 'Investor Relations', 'Careers', 'Terms & Conditions', 'Disclaimer', 'Contact Us', 'SMART ODR']
+
+const footerLeft  = ['Our Story','Our Impact','Our Developments','Experiences','Signature Hospitality','Press Room','Awards','Blogs']
+const footerRight = ['NRI','Investor Relations','Careers','Terms & Conditions','Disclaimer','Contact Us','SMART ODR']
 
 /* ─────────────────────────────────────────────
    HOOK — Intersection Observer (fires once)
 ───────────────────────────────────────────── */
 function useInView(opts = {}) {
-    const ref = useRef(null)
+    const ref    = useRef(null)
     const [inView, setInView] = useState(false)
     useEffect(() => {
         const el = ref.current
@@ -38,13 +39,168 @@ function useInView(opts = {}) {
 }
 
 /* ─────────────────────────────────────────────
+   SOLD-OUT RING  — SVG arc progress badge
+   Renders a circular ring showing % sold.
+   Colour ramps:
+     < 40%  → warm amber  (few sold — availability ok)
+     40-69% → saffron-gold
+     ≥ 70%  → coral-red   (almost gone)
+───────────────────────────────────────────── */
+function SoldOutRing({ pct, size = 54 }) {
+    const r       = (size - 6) / 2        // radius
+    const circ    = 2 * Math.PI * r       // full circumference
+    const dash    = (pct / 100) * circ    // filled arc length
+    const cx = size / 2
+    const cy = size / 2
+
+    const color =
+        pct >= 70 ? '#e07a5f'   // coral-red  — almost sold
+      : pct >= 40 ? '#d4aa6a'   // gold       — half gone
+      :             '#9ab87a'   // sage-green — still available
+
+    const trackColor = 'rgba(255,255,255,0.15)'
+
+    return (
+        <div style={{
+            position: 'relative',
+            width:  size,
+            height: size,
+            flexShrink: 0,
+        }}>
+            <svg
+                width={size}
+                height={size}
+                style={{ transform: 'rotate(-90deg)', display: 'block' }}
+                aria-hidden="true"
+            >
+                {/* Track */}
+                <circle
+                    cx={cx} cy={cy} r={r}
+                    fill="none"
+                    stroke={trackColor}
+                    strokeWidth="4"
+                />
+                {/* Filled arc */}
+                <circle
+                    cx={cx} cy={cy} r={r}
+                    fill="none"
+                    stroke={color}
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    strokeDasharray={`${dash} ${circ - dash}`}
+                    style={{ transition: 'stroke-dasharray 1.1s cubic-bezier(.22,1,.36,1)' }}
+                />
+            </svg>
+            {/* Percentage label centred in ring */}
+            <div style={{
+                position: 'absolute',
+                inset: 0,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                lineHeight: 1,
+                gap: 1,
+            }}>
+                <span style={{
+                    fontFamily: "'DM Sans',sans-serif",
+                    fontWeight: 500,
+                    fontSize: size < 50 ? '0.58rem' : '0.65rem',
+                    color: color,
+                    letterSpacing: '-0.02em',
+                }}>{pct}%</span>
+            </div>
+        </div>
+    )
+}
+
+/* ─────────────────────────────────────────────
+   SOLD-OUT STRIP — shown below card image
+   Progress bar + "X% SOLD" label
+───────────────────────────────────────────── */
+function SoldOutStrip({ pct }) {
+    const color =
+        pct >= 70 ? '#e07a5f'
+      : pct >= 40 ? '#d4aa6a'
+      :             '#9ab87a'
+
+    const remaining = 100 - pct
+
+    return (
+        <div style={{ marginTop: '0.6rem', padding: '0 0.1rem' }}>
+            {/* Labels row */}
+            <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '0.35rem',
+            }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    {/* coloured dot */}
+                    <span style={{
+                        display: 'inline-block',
+                        width: 7, height: 7,
+                        borderRadius: '50%',
+                        background: color,
+                        flexShrink: 0,
+                    }} />
+                    <span style={{
+                        fontFamily: "'DM Sans',sans-serif",
+                        fontSize: '0.62rem',
+                        fontWeight: 500,
+                        letterSpacing: '0.14em',
+                        textTransform: 'uppercase',
+                        color: '#3a342e',
+                    }}>{pct}% Sold</span>
+                </div>
+                <span style={{
+                    fontFamily: "'DM Sans',sans-serif",
+                    fontSize: '0.58rem',
+                    color: '#9a8a78',
+                    letterSpacing: '0.06em',
+                }}>{remaining}% Left</span>
+            </div>
+
+            {/* Track */}
+            <div style={{
+                height: 4,
+                borderRadius: 99,
+                background: 'rgba(154,138,120,0.18)',
+                overflow: 'hidden',
+                position: 'relative',
+            }}>
+                {/* Fill */}
+                <div style={{
+                    height: '100%',
+                    borderRadius: 99,
+                    width: `${pct}%`,
+                    background: `linear-gradient(90deg, ${color}cc, ${color})`,
+                    transition: 'width 1.1s cubic-bezier(.22,1,.36,1)',
+                    position: 'relative',
+                    overflow: 'hidden',
+                }}>
+                    {/* Shimmer sweep */}
+                    <div style={{
+                        position: 'absolute',
+                        inset: 0,
+                        background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.45) 50%, transparent 100%)',
+                        backgroundSize: '200% 100%',
+                        animation: 'shimmer 2.2s infinite linear',
+                    }} />
+                </div>
+            </div>
+        </div>
+    )
+}
+
+/* ─────────────────────────────────────────────
    FANCY IMAGE — shimmer + clip-path wipe + parallax
 ───────────────────────────────────────────── */
 function FancyImg({ src, alt, style, revealIn, delay = 0, parallax = false }) {
     const [loaded, setLoaded] = useState(false)
-    const imgRef = useRef(null)
+    const imgRef  = useRef(null)
     const wrapRef = useRef(null)
-    const rafRef = useRef(null)
+    const rafRef  = useRef(null)
 
     useEffect(() => {
         if (!parallax) return
@@ -54,8 +210,8 @@ function FancyImg({ src, alt, style, revealIn, delay = 0, parallax = false }) {
                 rafRef.current = null
                 const el = wrapRef.current
                 if (!el) return
-                const rect = el.getBoundingClientRect()
-                const prog = (window.innerHeight - rect.top) / (window.innerHeight + rect.height)
+                const rect   = el.getBoundingClientRect()
+                const prog   = (window.innerHeight - rect.top) / (window.innerHeight + rect.height)
                 const offset = (prog - 0.5) * 60
                 if (imgRef.current) imgRef.current.style.transform = `scale(1.12) translateY(${offset}px)`
             })
@@ -109,11 +265,24 @@ function FancyImg({ src, alt, style, revealIn, delay = 0, parallax = false }) {
 }
 
 /* ─────────────────────────────────────────────
-   CARD IMAGE — FIXED: objectFit cover, taller height
+   CARD IMAGE — with sold-out ring + urgency badge
 ───────────────────────────────────────────── */
-function CardImg({ src, color, name, location, onClick }) {
-    const [loaded, setLoaded] = useState(false)
+function CardImg({ src, color, name, location, soldOut, onClick }) {
+    const [loaded,  setLoaded]  = useState(false)
     const [hovered, setHovered] = useState(false)
+
+    /* urgency badge text */
+    const urgency =
+        soldOut >= 80 ? 'Almost Gone'
+      : soldOut >= 60 ? 'Selling Fast'
+      : soldOut >= 40 ? 'Limited Units'
+      :                 'Available'
+
+    const urgencyBg =
+        soldOut >= 80 ? 'rgba(224,122,95,0.92)'
+      : soldOut >= 60 ? 'rgba(212,170,106,0.92)'
+      : soldOut >= 40 ? 'rgba(212,170,106,0.72)'
+      :                 'rgba(154,184,122,0.85)'
 
     return (
         <div
@@ -122,7 +291,6 @@ function CardImg({ src, color, name, location, onClick }) {
             onMouseLeave={() => setHovered(false)}
             style={{
                 overflow: 'hidden',
-                /* ── KEY FIX: taller box so full building is visible ── */
                 height: 'clamp(280px, 30vw, 420px)',
                 position: 'relative',
                 background: color,
@@ -136,6 +304,7 @@ function CardImg({ src, color, name, location, onClick }) {
                 willChange: 'transform, box-shadow',
             }}
         >
+            {/* Shimmer placeholder */}
             {!loaded && (
                 <div style={{
                     position: 'absolute', inset: 0,
@@ -146,16 +315,14 @@ function CardImg({ src, color, name, location, onClick }) {
                 }} />
             )}
 
-            {/* ── KEY FIX: objectFit cover fills the box completely ── */}
             <img
                 src={src}
                 alt={name}
                 onLoad={() => setLoaded(true)}
                 style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',          /* was 'contain' — now fills box */
-                    objectPosition: 'center top', /* keep top of building visible */
+                    width: '100%', height: '100%',
+                    objectFit: 'cover',
+                    objectPosition: 'center top',
                     display: 'block',
                     transform: hovered ? 'scale(1.07) translateZ(0)' : 'scale(1.01) translateZ(0)',
                     transition: 'transform 0.9s cubic-bezier(.22,1,.36,1), opacity 0.5s',
@@ -164,7 +331,7 @@ function CardImg({ src, color, name, location, onClick }) {
                 }}
             />
 
-            {/* Bottom gradient overlay */}
+            {/* Dark gradient overlay */}
             <div style={{
                 position: 'absolute', inset: 0,
                 background: 'linear-gradient(0deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.18) 50%, transparent 100%)',
@@ -173,7 +340,7 @@ function CardImg({ src, color, name, location, onClick }) {
                 pointerEvents: 'none',
             }} />
 
-            {/* Top-left category tag */}
+            {/* ── TOP-LEFT: Category tag ── */}
             <div style={{
                 position: 'absolute', top: '0.85rem', left: '0.85rem', zIndex: 3,
                 padding: '3px 10px',
@@ -184,12 +351,76 @@ function CardImg({ src, color, name, location, onClick }) {
                 transform: hovered ? 'translateY(0)' : 'translateY(-6px)',
                 transition: 'opacity 0.35s, transform 0.35s',
             }}>
-                <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.56rem', letterSpacing: '0.28em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.85)' }}>
-                    Residential
-                </span>
+                <span style={{
+                    fontFamily: "'DM Sans',sans-serif",
+                    fontSize: '0.56rem',
+                    letterSpacing: '0.28em',
+                    textTransform: 'uppercase',
+                    color: 'rgba(255,255,255,0.85)',
+                }}>Residential</span>
             </div>
 
-            {/* Bottom info — always visible, lifts on hover */}
+            {/* ── TOP-RIGHT: Sold-out ring badge ── */}
+            <div style={{
+                position: 'absolute',
+                top: '0.75rem',
+                right: '0.75rem',
+                zIndex: 4,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '0.2rem',
+                background: 'rgba(0,0,0,0.42)',
+                backdropFilter: 'blur(8px)',
+                borderRadius: '50px',
+                padding: '0.4rem 0.55rem',
+                border: '1px solid rgba(255,255,255,0.12)',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.25)',
+                transform: hovered ? 'scale(1.08)' : 'scale(1)',
+                transition: 'transform 0.4s cubic-bezier(.22,1,.36,1)',
+            }}>
+                <SoldOutRing pct={soldOut} size={48} />
+                <span style={{
+                    fontFamily: "'DM Sans',sans-serif",
+                    fontSize: '0.46rem',
+                    letterSpacing: '0.18em',
+                    textTransform: 'uppercase',
+                    color: 'rgba(255,255,255,0.6)',
+                    lineHeight: 1,
+                    paddingBottom: '0.1rem',
+                }}>Sold</span>
+            </div>
+
+            {/* ── URGENCY PILL — mid-right, appears on hover ── */}
+            <div style={{
+                position: 'absolute',
+                top: '50%',
+                right: '0.75rem',
+                transform: hovered
+                    ? 'translateY(-50%) translateX(0)'
+                    : 'translateY(-50%) translateX(12px)',
+                zIndex: 4,
+                background: urgencyBg,
+                backdropFilter: 'blur(6px)',
+                borderRadius: 99,
+                padding: '0.28rem 0.7rem',
+                opacity: hovered ? 1 : 0,
+                transition: 'opacity 0.35s 0.1s, transform 0.4s 0.1s cubic-bezier(.22,1,.36,1)',
+                border: '1px solid rgba(255,255,255,0.22)',
+                pointerEvents: 'none',
+            }}>
+                <span style={{
+                    fontFamily: "'DM Sans',sans-serif",
+                    fontSize: '0.54rem',
+                    fontWeight: 500,
+                    letterSpacing: '0.16em',
+                    textTransform: 'uppercase',
+                    color: '#fff',
+                    whiteSpace: 'nowrap',
+                }}>{urgency}</span>
+            </div>
+
+            {/* ── BOTTOM INFO ── */}
             <div style={{
                 position: 'absolute', bottom: 0, left: 0, right: 0,
                 padding: '1.2rem 1rem 1rem',
@@ -214,6 +445,47 @@ function CardImg({ src, color, name, location, onClick }) {
                     color: 'rgba(255,255,255,0.55)',
                 }}>{location}</p>
 
+                {/* Mini sold-out bar inside card bottom */}
+                <div style={{ marginTop: '0.6rem' }}>
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: '0.3rem',
+                    }}>
+                        <span style={{
+                            fontFamily: "'DM Sans',sans-serif",
+                            fontSize: '0.56rem',
+                            letterSpacing: '0.14em',
+                            textTransform: 'uppercase',
+                            color: 'rgba(255,255,255,0.55)',
+                        }}>{soldOut}% Sold Out</span>
+                        <span style={{
+                            fontFamily: "'DM Sans',sans-serif",
+                            fontSize: '0.54rem',
+                            color: 'rgba(255,255,255,0.38)',
+                        }}>{100 - soldOut}% left</span>
+                    </div>
+                    <div style={{
+                        height: 3,
+                        borderRadius: 99,
+                        background: 'rgba(255,255,255,0.18)',
+                        overflow: 'hidden',
+                    }}>
+                        <div style={{
+                            height: '100%',
+                            borderRadius: 99,
+                            width: `${soldOut}%`,
+                            background: soldOut >= 70
+                                ? 'linear-gradient(90deg,#e07a5f,#f09070)'
+                                : soldOut >= 40
+                                    ? 'linear-gradient(90deg,#d4aa6a,#e8c480)'
+                                    : 'linear-gradient(90deg,#9ab87a,#b8d498)',
+                            transition: 'width 1.2s cubic-bezier(.22,1,.36,1)',
+                        }} />
+                    </div>
+                </div>
+
                 {/* Explore link */}
                 <div style={{
                     display: 'flex', alignItems: 'center', gap: '0.35rem',
@@ -222,9 +494,13 @@ function CardImg({ src, color, name, location, onClick }) {
                     transform: hovered ? 'translateY(0)' : 'translateY(6px)',
                     transition: 'opacity 0.3s 0.05s, transform 0.3s 0.05s',
                 }}>
-                    <span style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic', fontSize: '0.78rem', color: '#d4aa6a', letterSpacing: '0.04em' }}>
-                        View Project
-                    </span>
+                    <span style={{
+                        fontFamily: "'Cormorant Garamond',serif",
+                        fontStyle: 'italic',
+                        fontSize: '0.78rem',
+                        color: '#d4aa6a',
+                        letterSpacing: '0.04em',
+                    }}>View Project</span>
                     <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
                         <path d="M3 7h8M8 4l3 3-3 3" stroke="#d4aa6a" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
@@ -259,18 +535,267 @@ const ArrowIcon = () => (
 )
 
 /* ─────────────────────────────────────────────
+   SOLD-OUT LEGEND  — shown above grid
+───────────────────────────────────────────── */
+function SoldOutLegend() {
+    const items = [
+        { color: '#9ab87a', label: 'Available (< 40% sold)' },
+        { color: '#d4aa6a', label: 'Limited Units (40–69%)' },
+        { color: '#e07a5f', label: 'Almost Gone (70%+)'    },
+    ]
+    return (
+        <div style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '0.6rem 1.4rem',
+            justifyContent: 'center',
+            marginBottom: 'clamp(1.4rem,3vw,2.4rem)',
+        }}>
+            {items.map(it => (
+                <div key={it.label} style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                }}>
+                    <span style={{
+                        display: 'inline-block',
+                        width: 9, height: 9,
+                        borderRadius: '50%',
+                        background: it.color,
+                        flexShrink: 0,
+                    }} />
+                    <span style={{
+                        fontFamily: "'DM Sans',sans-serif",
+                        fontSize: '0.6rem',
+                        letterSpacing: '0.1em',
+                        color: '#7a6e65',
+                        textTransform: 'uppercase',
+                    }}>{it.label}</span>
+                </div>
+            ))}
+        </div>
+    )
+}
+
+/* ─────────────────────────────────────────────
+   DISCOUNT NOTIFICATION — slides in after 1 s
+───────────────────────────────────────────── */
+function DiscountNotification({ visible, onClose }) {
+    /* pulse the badge once every 3 s to draw attention */
+    const [pulse, setPulse] = useState(false)
+    useEffect(() => {
+        if (!visible) return
+        const id = setInterval(() => {
+            setPulse(true)
+            setTimeout(() => setPulse(false), 600)
+        }, 3000)
+        return () => clearInterval(id)
+    }, [visible])
+
+    return (
+        <div style={{
+            position: 'fixed',
+            bottom: 'clamp(1rem, 3vw, 2rem)',
+            right:  'clamp(1rem, 3vw, 2rem)',
+            zIndex: 9999,
+            maxWidth: 'min(380px, calc(100vw - 2rem))',
+            width: '100%',
+            transform: visible ? 'translateY(0) scale(1)' : 'translateY(120%) scale(0.95)',
+            opacity:   visible ? 1 : 0,
+            transition: 'transform 0.65s cubic-bezier(.22,1,.36,1), opacity 0.5s ease',
+            pointerEvents: visible ? 'auto' : 'none',
+        }}>
+            {/* Card */}
+            <div style={{
+                background: '#1a1610',
+                borderRadius: 4,
+                overflow: 'hidden',
+                boxShadow: '0 24px 60px rgba(0,0,0,0.32), 0 6px 18px rgba(0,0,0,0.18)',
+                border: '1px solid rgba(212,170,106,0.25)',
+            }}>
+                {/* Gold top accent line */}
+                <div style={{
+                    height: 3,
+                    background: 'linear-gradient(90deg, #b8924a, #d4aa6a, #9a7535)',
+                }} />
+
+                <div style={{ padding: 'clamp(1rem,3vw,1.4rem)' }}>
+                    {/* Header row */}
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.8rem', marginBottom: '0.9rem' }}>
+                        {/* Icon + title */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                            {/* Gift icon circle */}
+                            <div style={{
+                                width: 38, height: 38,
+                                borderRadius: '50%',
+                                background: 'rgba(212,170,106,0.12)',
+                                border: '1px solid rgba(212,170,106,0.3)',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                flexShrink: 0,
+                                transform: pulse ? 'scale(1.18)' : 'scale(1)',
+                                transition: 'transform 0.3s cubic-bezier(.22,1,.36,1)',
+                            }}>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="M20 12v10H4V12" stroke="#d4aa6a" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <path d="M22 7H2v5h20V7z" stroke="#d4aa6a" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <path d="M12 22V7" stroke="#d4aa6a" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z" stroke="#d4aa6a" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z" stroke="#d4aa6a" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p style={{
+                                    fontFamily: "'DM Sans',sans-serif",
+                                    fontSize: '0.56rem',
+                                    letterSpacing: '0.22em',
+                                    textTransform: 'uppercase',
+                                    color: '#d4aa6a',
+                                    marginBottom: '0.15rem',
+                                }}>Exclusive Offer</p>
+                                <p style={{
+                                    fontFamily: "'Cormorant Garamond',serif",
+                                    fontSize: 'clamp(1rem,2.4vw,1.18rem)',
+                                    fontWeight: 400,
+                                    color: '#f5f0e8',
+                                    lineHeight: 1.2,
+                                }}>Book Direct &amp; Save</p>
+                            </div>
+                        </div>
+
+                        {/* Close */}
+                        <button
+                            onClick={onClose}
+                            aria-label="Dismiss offer"
+                            style={{
+                                background: 'rgba(255,255,255,0.06)',
+                                border: '1px solid rgba(255,255,255,0.1)',
+                                borderRadius: '50%',
+                                width: 26, height: 26,
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                cursor: 'pointer',
+                                color: 'rgba(255,255,255,0.45)',
+                                flexShrink: 0,
+                                transition: 'background 0.25s, color 0.25s',
+                                padding: 0,
+                            }}
+                            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.14)'; e.currentTarget.style.color = '#fff' }}
+                            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = 'rgba(255,255,255,0.45)' }}
+                        >
+                            <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                                <path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    {/* Divider */}
+                    <div style={{ height: '1px', background: 'rgba(212,170,106,0.18)', marginBottom: '0.9rem' }} />
+
+                    {/* Big % badge + message */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        {/* % pill */}
+                        <div style={{
+                            background: 'linear-gradient(135deg, #b8924a, #d4aa6a)',
+                            borderRadius: 3,
+                            padding: '0.55rem 0.9rem',
+                            textAlign: 'center',
+                            flexShrink: 0,
+                        }}>
+                            <p style={{
+                                fontFamily: "'Cormorant Garamond',serif",
+                                fontSize: 'clamp(1.5rem,4vw,2rem)',
+                                fontWeight: 500,
+                                color: '#1a1610',
+                                lineHeight: 1,
+                                letterSpacing: '-0.02em',
+                            }}>2%</p>
+                            <p style={{
+                                fontFamily: "'DM Sans',sans-serif",
+                                fontSize: '0.5rem',
+                                letterSpacing: '0.18em',
+                                textTransform: 'uppercase',
+                                color: 'rgba(26,22,16,0.75)',
+                                marginTop: '0.15rem',
+                            }}>OFF</p>
+                        </div>
+
+                        {/* Text */}
+                        <div>
+                            <p style={{
+                                fontFamily: "'DM Sans',sans-serif",
+                                fontSize: 'clamp(0.72rem,2vw,0.82rem)',
+                                color: '#d8d0c4',
+                                lineHeight: 1.65,
+                            }}>
+                                Get an <strong style={{ color: '#d4aa6a', fontWeight: 500 }}>additional 2% discount</strong> when you book directly through our website — exclusively for online visitors.
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* CTA */}
+                    <Link to="/projects" style={{ textDecoration: 'none' }}>
+                        <div style={{
+                            marginTop: '1rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '0.5rem',
+                            padding: '0.6rem 1rem',
+                            background: 'linear-gradient(90deg, #b8924a, #d4aa6a)',
+                            borderRadius: 2,
+                            cursor: 'pointer',
+                            transition: 'opacity 0.25s',
+                        }}
+                            onMouseEnter={e => e.currentTarget.style.opacity = '0.88'}
+                            onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+                        >
+                            <span style={{
+                                fontFamily: "'DM Sans',sans-serif",
+                                fontSize: '0.65rem',
+                                letterSpacing: '0.18em',
+                                textTransform: 'uppercase',
+                                color: '#1a1610',
+                                fontWeight: 500,
+                            }}>Explore Offer</span>
+                            <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                                <path d="M3 7h8M8 4l3 3-3 3" stroke="#1a1610" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                        </div>
+                    </Link>
+
+                    {/* Fine print */}
+                    <p style={{
+                        fontFamily: "'DM Sans',sans-serif",
+                        fontSize: '0.54rem',
+                        color: 'rgba(255,255,255,0.28)',
+                        textAlign: 'center',
+                        marginTop: '0.6rem',
+                        letterSpacing: '0.06em',
+                    }}>*Offer valid on direct website bookings only. T&amp;C apply.</p>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+/* ─────────────────────────────────────────────
    MAIN
 ───────────────────────────────────────────── */
 export default function Home() {
     const navigate = useNavigate()
     const videoRef = useRef(null)
 
-    const [promiseRef, promiseInView] = useInView()
-    const [purposeRef, purposeInView] = useInView()
-    const [devHeadRef, devHeadInView] = useInView()
-    const [hospRef, hospInView] = useInView()
-    const [footerRef, footerInView] = useInView()
-    const [devGridRef, devGridInView] = useInView({ threshold: 0.08 })
+    const [showNotif, setShowNotif] = useState(false)
+    useEffect(() => {
+        const t = setTimeout(() => setShowNotif(true), 1000)
+        return () => clearTimeout(t)
+    }, [])
+
+    const [promiseRef,  promiseInView]  = useInView()
+    const [purposeRef,  purposeInView]  = useInView()
+    const [devHeadRef,  devHeadInView]  = useInView()
+    const [hospRef,     hospInView]     = useInView()
+    const [footerRef,   footerInView]   = useInView()
+    const [devGridRef,  devGridInView]  = useInView({ threshold: 0.08 })
 
     return (
         <div style={{ background: '#faf9f7', color: '#1a1610', overflowX: 'hidden' }}>
@@ -285,11 +810,12 @@ export default function Home() {
         @keyframes lineSweep { from{transform:scaleX(0)} to{transform:scaleX(1)} }
         @keyframes floatDot  { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-12px) scale(1.1)} }
         @keyframes videoFade { from{opacity:0;transform:scale(1.06)} to{opacity:1;transform:scale(1)} }
-
+        @keyframes notifIn   { from{opacity:0;transform:translateY(120%) scale(0.95)} to{opacity:1;transform:translateY(0) scale(1)} }
         @keyframes cardReveal {
           from { opacity:0; transform:translateY(28px) scale(0.95) translateZ(0); }
           to   { opacity:1; transform:translateY(0)   scale(1)    translateZ(0); }
         }
+        @keyframes ringFill { from { stroke-dasharray: 0 999 } }
 
         .hero-eyebrow { animation:heroUp 1.2s cubic-bezier(.22,1,.36,1) forwards 0.9s; opacity:0; }
         .hero-text    { animation:heroUp 1.3s cubic-bezier(.22,1,.36,1) forwards 1.1s; opacity:0; }
@@ -335,32 +861,22 @@ export default function Home() {
         .dev-grid.revealed .dev-card:nth-child(2){ animation-delay:0.18s }
         .dev-grid.revealed .dev-card:nth-child(3){ animation-delay:0.31s }
         .dev-grid.revealed .dev-card:nth-child(4){ animation-delay:0.44s }
+        .dev-grid.revealed .dev-card:nth-child(5){ animation-delay:0.57s }
+        .dev-grid.revealed .dev-card:nth-child(6){ animation-delay:0.70s }
+        .dev-grid.revealed .dev-card:nth-child(7){ animation-delay:0.83s }
 
-        /* card name below image */
-        .dev-card-label {
-          margin-top: 0.85rem;
-          padding: 0 0.1rem;
-        }
-        .dev-card-name {
-          font-family: 'DM Sans', sans-serif;
-          font-size: 0.8rem;
-          font-weight: 500;
-          color: #2a2520;
-          line-height: 1.3;
-        }
-        .dev-card-loc {
-          font-family: 'DM Sans', sans-serif;
-          font-size: 0.68rem;
-          color: #9a8a78;
-          margin-top: 0.18rem;
-          letter-spacing: 0.04em;
-        }
+        .dev-card-label { margin-top: 0.55rem; padding: 0 0.1rem; }
+        .dev-card-name  { font-family:'DM Sans',sans-serif; font-size:0.8rem; font-weight:500; color:#2a2520; line-height:1.3; }
+        .dev-card-loc   { font-family:'DM Sans',sans-serif; font-size:0.68rem; color:#9a8a78; margin-top:0.18rem; letter-spacing:0.04em; }
 
         /* ── Responsive breakpoints ── */
-        @media(max-width:1024px) {
+        @media(max-width:1200px) {
+          .dev-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+        }
+        @media(max-width:900px) {
           .dev-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
         }
-        @media(max-width:540px) {
+        @media(max-width:480px) {
           .dev-grid { grid-template-columns: 1fr; }
         }
 
@@ -377,14 +893,19 @@ export default function Home() {
           .img-right-group{ display:none !important; }
         }
 
-        /* presence section heading accent */
         .presence-accent {
           display:inline-block;
-          width: 36px; height: 1px;
-          background: linear-gradient(to right, #b8924a, #9a7535);
-          margin: 0 auto;
+          width:36px; height:1px;
+          background:linear-gradient(to right,#b8924a,#9a7535);
+          margin:0 auto;
         }
       `}</style>
+
+            {/* ═══ DISCOUNT NOTIFICATION ═══ */}
+            <DiscountNotification
+                visible={showNotif}
+                onClose={() => setShowNotif(false)}
+            />
 
             {/* ═══ §1 HERO — VIDEO ═══ */}
             <section style={{ position: 'relative', width: '100%', height: '100vh', minHeight: 520, overflow: 'hidden' }}>
@@ -463,21 +984,21 @@ export default function Home() {
             </section>
 
             {/* ═══════════════════════════════════════
-                §4 OUR PRESENCE — FIXED CARD SECTION
+                §4 OUR PRESENCE — SOLD-OUT CARDS
             ═══════════════════════════════════════ */}
             <section style={{
                 background: '#f2ede8',
                 padding: 'clamp(3.5rem,7vw,5.5rem) clamp(1.5rem,7vw,5.5rem)',
             }}>
-                <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+                <div style={{ maxWidth: 1280, margin: '0 auto' }}>
 
                     {/* Heading */}
                     <div
                         ref={devHeadRef}
                         className={`stagger-wrap ${devHeadInView ? 'revealed' : ''}`}
-                        style={{ textAlign: 'center', marginBottom: 'clamp(2rem,4vw,3.5rem)' }}
+                        style={{ textAlign: 'center', marginBottom: 'clamp(1.5rem,3vw,2.5rem)' }}
                     >
-
+                        <p className="sc label-text">Portfolio</p>
                         <h2 className="sc" style={{
                             fontFamily: "'Cormorant Garamond',serif",
                             fontSize: 'clamp(1.8rem,3.2vw,2.8rem)',
@@ -490,6 +1011,9 @@ export default function Home() {
                         <div className="sc presence-accent" />
                     </div>
 
+                    {/* Legend */}
+                    <SoldOutLegend />
+
                     {/* Grid */}
                     <div
                         ref={devGridRef}
@@ -497,20 +1021,20 @@ export default function Home() {
                     >
                         {developments.map((d) => (
                             <div key={d.id} className="dev-card">
-                                {/* Card image — fills full height */}
                                 <CardImg
                                     src={d.img}
                                     color={d.color}
                                     name={d.name}
                                     location={d.location}
+                                    soldOut={d.soldOut}
                                     onClick={() => navigate(`/projects/${d.slug}`)}
                                 />
-
-                                {/* Label below card */}
+                                {/* Label + strip below card */}
                                 <div className="dev-card-label">
                                     <p className="dev-card-name">{d.name}</p>
                                     <p className="dev-card-loc">· {d.location}</p>
                                 </div>
+                                <SoldOutStrip pct={d.soldOut} />
                             </div>
                         ))}
                     </div>
