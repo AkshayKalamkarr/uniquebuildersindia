@@ -8,23 +8,23 @@ import { Link, useNavigate } from 'react-router-dom'
 const BRAND = 'Unique builders & developers'
 
 const developments = [
-    { id: 1, name: 'New City Palace',  location: 'Pushpak Nagar',        img: '/images/newcitypalace413/1.jpeg',              color: '#2c3e50', slug: 'project-1', soldOut: 72 },
-    { id: 2, name: 'Gajanan Enclave',  location: 'Pushpak Nagar',        img: '/images/gajananenclave357/1.jpg',              color: '#1a3a4a', slug: 'project-2', soldOut: 50 },
-    { id: 3, name: 'Unique Palacio',   location: 'Pushpak Nagar',        img: '/images/uniquepalacio24/1.jpg',                color: '#1a3a4a', slug: 'project-3', soldOut: 30 },
-    { id: 4, name: 'Unique Apartment', location: 'Ulwe',                  img: '/images/uniqueapartment420/1.jpg',             color: '#1a3a4a', slug: 'project-4', soldOut: 88 },
-    { id: 5, name: 'Ravi Apartment',   location: 'Karanjade, Pushpak Node', img: '/images/raviapartment141/raviapartment-5.jpg', color: '#1a3a4a', slug: 'project-5', soldOut: 50 },
-    { id: 6, name: 'Happy Apartment',  location: 'Khalapur, Rees',       img: '/images/happyappartment/2.jpg',                color: '#1a3a4a', slug: 'project-6', soldOut: 30 },
-    { id: 7, name: 'Unique Aura',      location: 'Pushpak Nagar',        img: '/images/uniqueaura/unique-2.jpeg',             color: '#1a3a4a', slug: 'project-7', soldOut: 65 },
+    { id: 1, name: 'New City Palace', location: 'Pushpak Nagar', img: '/images/newcitypalace413/1.jpeg', color: '#2c3e50', slug: 'project-1', soldOut: 72 },
+    { id: 2, name: 'Gajanan Enclave', location: 'Pushpak Nagar', img: '/images/gajananenclave357/1.jpg', color: '#1a3a4a', slug: 'project-2', soldOut: 50 },
+    { id: 3, name: 'Unique Palacio', location: 'Pushpak Nagar', img: '/images/uniquepalacio24/1.jpg', color: '#1a3a4a', slug: 'project-3', soldOut: 30 },
+    { id: 4, name: 'Unique Apartment', location: 'Ulwe', img: '/images/uniqueapartment420/1.jpg', color: '#1a3a4a', slug: 'project-4', soldOut: 88 },
+    { id: 5, name: 'Ravi Apartment', location: 'Karanjade, Pushpak Node', img: '/images/raviapartment141/raviapartment-5.jpg', color: '#1a3a4a', slug: 'project-5', soldOut: 50 },
+    { id: 6, name: 'Happy Apartment', location: 'Khalapur, Rees', img: '/images/happyappartment/2.jpg', color: '#1a3a4a', slug: 'project-6', soldOut: 30 },
+    { id: 7, name: 'Unique Aura', location: 'Pushpak Nagar', img: '/images/uniqueaura/unique-2.jpeg', color: '#1a3a4a', slug: 'project-7', soldOut: 65 },
 ]
 
-const footerLeft  = ['Our Story','Our Impact','Our Developments','Experiences','Signature Hospitality','Press Room','Awards','Blogs']
-const footerRight = ['NRI','Investor Relations','Careers','Terms & Conditions','Disclaimer','Contact Us','SMART ODR']
+const footerLeft = ['Our Story', 'Our Impact', 'Our Developments', 'Experiences', 'Signature Hospitality', 'Press Room', 'Awards', 'Blogs']
+const footerRight = ['NRI', 'Investor Relations', 'Careers', 'Terms & Conditions', 'Disclaimer', 'Contact Us', 'SMART ODR']
 
 /* ─────────────────────────────────────────────
    HOOK — Intersection Observer (fires once)
 ───────────────────────────────────────────── */
 function useInView(opts = {}) {
-    const ref    = useRef(null)
+    const ref = useRef(null)
     const [inView, setInView] = useState(false)
     useEffect(() => {
         const el = ref.current
@@ -47,23 +47,23 @@ function useInView(opts = {}) {
      ≥ 70%  → coral-red   (almost gone)
 ───────────────────────────────────────────── */
 function SoldOutRing({ pct, size = 54 }) {
-    const r       = (size - 6) / 2        // radius
-    const circ    = 2 * Math.PI * r       // full circumference
-    const dash    = (pct / 100) * circ    // filled arc length
+    const r = (size - 6) / 2        // radius
+    const circ = 2 * Math.PI * r       // full circumference
+    const dash = (pct / 100) * circ    // filled arc length
     const cx = size / 2
     const cy = size / 2
 
     const color =
         pct >= 70 ? '#e07a5f'   // coral-red  — almost sold
-      : pct >= 40 ? '#d4aa6a'   // gold       — half gone
-      :             '#9ab87a'   // sage-green — still available
+            : pct >= 40 ? '#d4aa6a'   // gold       — half gone
+                : '#9ab87a'   // sage-green — still available
 
     const trackColor = 'rgba(255,255,255,0.15)'
 
     return (
         <div style={{
             position: 'relative',
-            width:  size,
+            width: size,
             height: size,
             flexShrink: 0,
         }}>
@@ -121,8 +121,8 @@ function SoldOutRing({ pct, size = 54 }) {
 function SoldOutStrip({ pct }) {
     const color =
         pct >= 70 ? '#e07a5f'
-      : pct >= 40 ? '#d4aa6a'
-      :             '#9ab87a'
+            : pct >= 40 ? '#d4aa6a'
+                : '#9ab87a'
 
     const remaining = 100 - pct
 
@@ -198,9 +198,9 @@ function SoldOutStrip({ pct }) {
 ───────────────────────────────────────────── */
 function FancyImg({ src, alt, style, revealIn, delay = 0, parallax = false }) {
     const [loaded, setLoaded] = useState(false)
-    const imgRef  = useRef(null)
+    const imgRef = useRef(null)
     const wrapRef = useRef(null)
-    const rafRef  = useRef(null)
+    const rafRef = useRef(null)
 
     useEffect(() => {
         if (!parallax) return
@@ -210,8 +210,8 @@ function FancyImg({ src, alt, style, revealIn, delay = 0, parallax = false }) {
                 rafRef.current = null
                 const el = wrapRef.current
                 if (!el) return
-                const rect   = el.getBoundingClientRect()
-                const prog   = (window.innerHeight - rect.top) / (window.innerHeight + rect.height)
+                const rect = el.getBoundingClientRect()
+                const prog = (window.innerHeight - rect.top) / (window.innerHeight + rect.height)
                 const offset = (prog - 0.5) * 60
                 if (imgRef.current) imgRef.current.style.transform = `scale(1.12) translateY(${offset}px)`
             })
@@ -268,21 +268,21 @@ function FancyImg({ src, alt, style, revealIn, delay = 0, parallax = false }) {
    CARD IMAGE — with sold-out ring + urgency badge
 ───────────────────────────────────────────── */
 function CardImg({ src, color, name, location, soldOut, onClick }) {
-    const [loaded,  setLoaded]  = useState(false)
+    const [loaded, setLoaded] = useState(false)
     const [hovered, setHovered] = useState(false)
 
     /* urgency badge text */
     const urgency =
         soldOut >= 80 ? 'Almost Gone'
-      : soldOut >= 60 ? 'Selling Fast'
-      : soldOut >= 40 ? 'Limited Units'
-      :                 'Available'
+            : soldOut >= 60 ? 'Selling Fast'
+                : soldOut >= 40 ? 'Limited Units'
+                    : 'Available'
 
     const urgencyBg =
         soldOut >= 80 ? 'rgba(224,122,95,0.92)'
-      : soldOut >= 60 ? 'rgba(212,170,106,0.92)'
-      : soldOut >= 40 ? 'rgba(212,170,106,0.72)'
-      :                 'rgba(154,184,122,0.85)'
+            : soldOut >= 60 ? 'rgba(212,170,106,0.92)'
+                : soldOut >= 40 ? 'rgba(212,170,106,0.72)'
+                    : 'rgba(154,184,122,0.85)'
 
     return (
         <div
@@ -541,7 +541,7 @@ function SoldOutLegend() {
     const items = [
         { color: '#9ab87a', label: 'Available (< 40% sold)' },
         { color: '#d4aa6a', label: 'Limited Units (40–69%)' },
-        { color: '#e07a5f', label: 'Almost Gone (70%+)'    },
+        { color: '#e07a5f', label: 'Almost Gone (70%+)' },
     ]
     return (
         <div style={{
@@ -596,12 +596,12 @@ function DiscountNotification({ visible, onClose }) {
         <div style={{
             position: 'fixed',
             bottom: 'clamp(1rem, 3vw, 2rem)',
-            right:  'clamp(1rem, 3vw, 2rem)',
+            right: 'clamp(1rem, 3vw, 2rem)',
             zIndex: 9999,
             maxWidth: 'min(380px, calc(100vw - 2rem))',
             width: '100%',
             transform: visible ? 'translateY(0) scale(1)' : 'translateY(120%) scale(0.95)',
-            opacity:   visible ? 1 : 0,
+            opacity: visible ? 1 : 0,
             transition: 'transform 0.65s cubic-bezier(.22,1,.36,1), opacity 0.5s ease',
             pointerEvents: visible ? 'auto' : 'none',
         }}>
@@ -636,11 +636,11 @@ function DiscountNotification({ visible, onClose }) {
                                 transition: 'transform 0.3s cubic-bezier(.22,1,.36,1)',
                             }}>
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                    <path d="M20 12v10H4V12" stroke="#d4aa6a" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                                    <path d="M22 7H2v5h20V7z" stroke="#d4aa6a" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                                    <path d="M12 22V7" stroke="#d4aa6a" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                                    <path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z" stroke="#d4aa6a" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                                    <path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z" stroke="#d4aa6a" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <path d="M20 12v10H4V12" stroke="#d4aa6a" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M22 7H2v5h20V7z" stroke="#d4aa6a" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M12 22V7" stroke="#d4aa6a" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z" stroke="#d4aa6a" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z" stroke="#d4aa6a" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
                             </div>
                             <div>
@@ -682,7 +682,7 @@ function DiscountNotification({ visible, onClose }) {
                             onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = 'rgba(255,255,255,0.45)' }}
                         >
                             <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                                <path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                                <path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                             </svg>
                         </button>
                     </div>
@@ -732,7 +732,7 @@ function DiscountNotification({ visible, onClose }) {
                     </div>
 
                     {/* CTA */}
-                    <Link to="/projects" style={{ textDecoration: 'none' }}>
+                    <Link to="/enquiry" style={{ textDecoration: 'none' }}>
                         <div style={{
                             marginTop: '1rem',
                             display: 'flex',
@@ -757,7 +757,7 @@ function DiscountNotification({ visible, onClose }) {
                                 fontWeight: 500,
                             }}>Explore Offer</span>
                             <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                                <path d="M3 7h8M8 4l3 3-3 3" stroke="#1a1610" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M3 7h8M8 4l3 3-3 3" stroke="#1a1610" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                         </div>
                     </Link>
@@ -790,12 +790,12 @@ export default function Home() {
         return () => clearTimeout(t)
     }, [])
 
-    const [promiseRef,  promiseInView]  = useInView()
-    const [purposeRef,  purposeInView]  = useInView()
-    const [devHeadRef,  devHeadInView]  = useInView()
-    const [hospRef,     hospInView]     = useInView()
-    const [footerRef,   footerInView]   = useInView()
-    const [devGridRef,  devGridInView]  = useInView({ threshold: 0.08 })
+    const [promiseRef, promiseInView] = useInView()
+    const [purposeRef, purposeInView] = useInView()
+    const [devHeadRef, devHeadInView] = useInView()
+    const [hospRef, hospInView] = useInView()
+    const [footerRef, footerInView] = useInView()
+    const [devGridRef, devGridInView] = useInView({ threshold: 0.08 })
 
     return (
         <div style={{ background: '#faf9f7', color: '#1a1610', overflowX: 'hidden' }}>
