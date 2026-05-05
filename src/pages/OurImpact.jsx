@@ -89,19 +89,19 @@ function SectionHeading({ children, light = false }) {
 // ── DATA ──────────────────────────────────────────────────────────────────
 const ENV_CARDS = [
     {
-        img: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=700&q=80",
+        img: "/images/ourimpact/ourimpact2.jpg",
         tag: "Decarbonisation",
         title: "Low-Carbon Transition",
         desc: "Our decarbonisation initiatives are designed to lead the transition to a low-carbon future for the real estate industry.",
     },
     {
-        img: "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=700&q=80",
+        img: "/images/ourimpact/ourimpact3.jpg",
         tag: "Climate Resilience",
         title: "Water & Biodiversity",
         desc: "Resilience initiatives focus on water resilience, biodiversity and asset safety; mitigating future climate risks.",
     },
     {
-        img: "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=700&q=80",
+        img: "/images/ourimpact/ourimpact4.jpg",
         tag: "Net Zero",
         title: "Net Zero Urban Accelerator",
         desc: "The Unique Builders & Developers Net Zero Urban Accelerator, in partnership with US-based think tank RMI, is a pioneering platform for change.",
@@ -110,19 +110,19 @@ const ENV_CARDS = [
 
 const SOCIAL_CARDS = [
     {
-        img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=700&q=80",
+        img: "/images/ourimpact/ourimpact5.jpg",
         tag: "Community Development",
         // title: "Unnati Programme",
         desc: "We aim to create projects that foster safe, inclusive, and vibrant communities. From thoughtful planning to sustainable practices, every development is designed to enhance quality of life.",
     },
     {
-        img: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=700&q=80",
+        img: "/images/ourimpact/ourimpact6.jpg",
         tag: "Sustainable Living",
         // title: "Unique Genius Programme",
         desc: "We are working towards integrating eco-friendly practices such as green spaces, efficient resource usage, and environmentally conscious construction methods in our future projects.",
     },
     {
-        img: "https://images.unsplash.com/photo-1547347298-4074fc3086f0?w=700&q=80",
+        img: "/images/ourimpact/ourimpact7.jpg",
         tag: "Our Commitment",
         // title: "Access to Quality Sport",
         desc: "As a growing brand, Unique Builders & Developers is dedicated to gradually expanding its social initiatives and making a meaningful difference in the communities we serve.",

@@ -23,7 +23,7 @@ const STORY_SECTIONS = [
         tag: "OUR STORY",
         headline: "A legacy of excellence",
         body: "With over 20 years of experience, Unique Builders & Developers has built a reputation for quality, trust, and thoughtful development—delivering spaces designed for lasting value and modern living.",
-        img: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=900&q=80",
+        img: "/images/ourstory/our-story3.jpg",
         imgAlt: "Iconic skyscraper at dusk",
         layout: "img-left",
     },
@@ -31,7 +31,7 @@ const STORY_SECTIONS = [
         tag: "",
         headline: "Crafting timeless elegance",
         body: "We design and build homes with a focus on quality, detail, and lasting value—creating spaces that blend modern living with enduring elegance.",
-        img: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=900&q=80",
+        img: "/images/ourstory/our-story4.jpg",
         imgAlt: "Luxury interior living room",
         layout: "img-right",
     },
@@ -39,7 +39,7 @@ const STORY_SECTIONS = [
         tag: "",
         headline: "Sophistication on a grand scale",
         body: "We develop residential and commercial spaces designed for modern lifestyles—combining quality, functionality, and lasting value.",
-        img: "https://images.unsplash.com/photo-1560185007-c5ca9d2c014d?w=900&q=80",
+        img: "/images/ourstory/our-story5.jpg",
         imgAlt: "Luxury hotel lobby corridor",
         layout: "img-left",
     },
@@ -248,7 +248,7 @@ function Hero() {
     return (
         <section style={{ height: "100vh", minHeight: 580, position: "relative", overflow: "hidden" }}>
             <img
-                src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=1800&q=85"
+                src="/images/ourstory/our-story1.jpg"
                 alt="Luxury outdoor event setting"
                 style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 30%" }}
             />
@@ -269,7 +269,7 @@ function IntroSplit() {
         <section style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: 480 }}>
             <div style={{ overflow: "hidden" }}>
                 <img
-                    src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=900&q=80"
+                    src="/images/ourstory/our-story2.jpg"
                     alt="Modern architecture building"
                     style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform .6s ease" }}
                     onMouseOver={e => e.currentTarget.style.transform = "scale(1.04)"}
