@@ -12,7 +12,7 @@ const developments = [
     { id: 2, name: 'Gajanan Enclave', location: 'Pushpak Nagar', img: '/images/gajananenclave357/1.jpg', color: '#1a3a4a', slug: 'project-2', soldOut: 50 },
     { id: 3, name: 'Unique Palacio', location: 'Pushpak Nagar', img: '/images/uniquepalacio24/1.jpg', color: '#1a3a4a', slug: 'project-3', soldOut: 30 },
     { id: 4, name: 'Unique Apartment', location: 'Ulwe', img: '/images/uniqueapartment420/1.jpg', color: '#1a3a4a', slug: 'project-4', soldOut: 88 },
-    { id: 5, name: 'Ravi Apartment', location: 'Karanjade, Pushpak Node', img: '/images/raviapartment141/raviapartment-5.jpg', color: '#1a3a4a', slug: 'project-5', soldOut: 50 },
+    { id: 5, name: 'Ravi Apartment', location: 'Karanjade, Pushpak Node', img: '/images/raviapartment141/raviapartment-5.jpg', color: '#1a3a4a', slug: 'project-5', soldOut: 100 },
     { id: 6, name: 'Happy Apartment', location: 'Khalapur, Rees', img: '/images/happyappartment/2.jpg', color: '#1a3a4a', slug: 'project-6', soldOut: 30 },
     { id: 7, name: 'Unique Aura', location: 'Pushpak Nagar', img: '/images/uniqueaura/unique-2.jpeg', color: '#1a3a4a', slug: 'project-7', soldOut: 65 },
 ]

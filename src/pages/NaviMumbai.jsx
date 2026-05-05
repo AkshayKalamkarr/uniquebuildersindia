@@ -578,7 +578,7 @@ export default function NaviMumbaiRising() {
                                 />
                                 <div className="nm-img-overlay" />
                                 <div className="nm-img-number" style={{ fontSize: 40 }}>02</div>
-                                <div className="nm-img-badge" style={{ fontSize: 9 }}>Sea Link</div>
+                                <div className="nm-img-badge" style={{ fontSize: 9 }}>Mumbai Local</div>
                                 <div className="nm-img-content" style={{ padding: "18px 22px 22px" }}>
                                     <div className="nm-img-line" />
                                     <div className="nm-bebas" style={{ fontSize: "clamp(18px, 2.4vw, 24px)", color: "#fff", lineHeight: 1.1 }}>
