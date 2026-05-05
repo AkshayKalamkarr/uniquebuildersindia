@@ -16,7 +16,7 @@ export const projects = [
         ],
 
         videos: [
-            "/images/newcitypalace413/newCity-1.mp4",
+            "/images/newcitypalace413/newCity-1.mp4",   
             "/images/newcitypalace413/newCity-2.mp4",
             "/images/newcitypalace413/newCity-3.mp4",
         ],
@@ -49,6 +49,8 @@ export const projects = [
         ],
 
         description: "Premium apartments designed for urban lifestyle and comfort.",
+
+        mapEmbedUrl: "https://google/maps/t9yrW5h9t7ZyWBRH6"
     },
 
     {
@@ -69,6 +71,8 @@ export const projects = [
         ],
 
         description: "Spacious homes with scenic hill views and world-class facilities.",
+
+        mapEmbedUrl: "https://maps.app.goo.gl/hbtLmGBVGVeoyj8Z6?g_st=aw"
     },
 
     {
@@ -90,6 +94,8 @@ export const projects = [
         ],
 
         description: "Spacious homes with scenic hill views and world-class facilities.",
+
+        mapEmbedUrl: "https://google/maps/t9yrW5h9t7ZyWBRH6"
     },
 
     {
@@ -113,6 +119,8 @@ export const projects = [
         ],
 
         description: "Spacious homes with scenic hill views and world-class facilities.",
+
+        mapEmbedUrl: "https://google/maps/t9yrW5h9t7ZyWBRH6"
     },
 
     {
@@ -136,6 +144,8 @@ export const projects = [
         ],
 
         description: "Spacious homes with scenic hill views and world-class facilities.",
+
+        mapEmbedUrl: "https://google/maps/t9yrW5h9t7ZyWBRH6"
     },
 
 
@@ -158,5 +168,7 @@ export const projects = [
         ],
 
         description: "Spacious homes with scenic hill views and world-class facilities.",
+
+        mapEmbedUrl: "https://google/maps/t9yrW5h9t7ZyWBRH6"
     },
 ];
