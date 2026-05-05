@@ -1,19 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react'
-import Navbar from '../components/Navbar'
-
-/* ─────────────────────────────────────────────
-   CONFIG
-───────────────────────────────────────────── */
-const BRAND = 'Unique builders & developers'
-
-const developments = [
-    { id: 1, name: 'New City Palace', location: 'Pushpak Nagar', img: '/images/newcitypalace413/1.jpeg', color: '#2c3e50' },
-    { id: 2, name: 'Unique Apartment', location: 'Ulwe', img: '/images/uniqueapartment420/1.jpg', color: '#1a3a4a' },
-    { id: 3, name: 'Unique Palacio', location: 'Karanjadi', img: '/images/uniquepalacio24/1.jpg', color: '#3d2b1f' },
-    { id: 4, name: 'Gajanan Enclave', location: 'Rasayani', img: '/images/gajananenclave357/1.jpg', color: '#1a2a3a' },
-]
-const footerLeft = ['Our Story', 'Our Impact', 'Our Developments', 'Experiences', 'Signature Hospitality', 'Press Room', 'Awards', 'Blogs']
-const footerRight = ['NRI', 'Investor Relations', 'Careers', 'Terms & Conditions', 'Disclaimer', 'Contact Us', 'SMART ODR']
 
 /* ─────────────────────────────────────────────
    HOOK — Intersection Observer (fires once)
@@ -26,7 +11,7 @@ function useInView(opts = {}) {
         if (!el) return
         const ob = new IntersectionObserver(([e]) => {
             if (e.isIntersecting) { setInView(true); ob.unobserve(el) }
-        }, { threshold: 0.12, ...opts })
+        }, { threshold: 0.1, ...opts })
         ob.observe(el)
         return () => ob.disconnect()
     }, [])
@@ -34,242 +19,529 @@ function useInView(opts = {}) {
 }
 
 /* ─────────────────────────────────────────────
-   FANCY IMAGE — shimmer + clip-path wipe + parallax
+   NAV LINKS — only what's in the navbar
 ───────────────────────────────────────────── */
-function FancyImg({ src, alt, style, revealIn, delay = 0, parallax = false }) {
-    const [loaded, setLoaded] = useState(false)
-    const imgRef = useRef(null)
-    const wrapRef = useRef(null)
+const NAV_LINKS = [
+    { label: 'Our Story', href: '/our-story' },
+    { label: 'Our Impact', href: '/our-impact' },
+    { label: 'Navi Mumbai Rising', href: '/navi-mumbai' },
+]
 
-    useEffect(() => {
-        if (!parallax) return
-        const handleScroll = () => {
-            const el = wrapRef.current
-            if (!el) return
-            const rect = el.getBoundingClientRect()
-            const prog = (window.innerHeight - rect.top) / (window.innerHeight + rect.height)
-            const offset = (prog - 0.5) * 60
-            if (imgRef.current) imgRef.current.style.transform = `scale(1.12) translateY(${offset}px)`
-        }
-        window.addEventListener('scroll', handleScroll, { passive: true })
-        return () => window.removeEventListener('scroll', handleScroll)
-    }, [parallax])
-
-    return (
-        <div ref={wrapRef} style={{ position: 'relative', overflow: 'hidden', ...style }}>
-            {!loaded && (
-                <div style={{
-                    position: 'absolute', inset: 0,
-                    background: 'linear-gradient(90deg,#f0ece8 0%,#e8e2dc 40%,#f0ece8 80%)',
-                    backgroundSize: '200% 100%',
-                    animation: 'shimmer 1.6s infinite linear',
-                    zIndex: 1,
-                }} />
-            )}
-            <img
-                ref={imgRef}
-                src={src}
-                alt={alt || ''}
-                onLoad={() => setLoaded(true)}
-                style={{
-                    width: '100%', height: '100%', objectFit: 'cover', display: 'block',
-                    transform: parallax ? 'scale(1.12)' : 'scale(1)',
-                    transition: parallax ? 'none' : 'transform 0.85s cubic-bezier(.22,1,.36,1)',
-                    filter: loaded ? 'none' : 'blur(4px)',
-                    opacity: loaded ? 1 : 0,
-                    transitionProperty: 'opacity,transform,filter',
-                    transitionDuration: '0.6s',
-                }}
-            />
-            {/* Clip-path curtain — slides away on reveal */}
-            <div style={{
-                position: 'absolute', inset: 0,
-                background: '#faf9f7',
-                clipPath: revealIn
-                    ? 'polygon(0 0,100% 0,100% 0,0 0)'
-                    : 'polygon(0 0,100% 0,100% 100%,0 100%)',
-                transition: `clip-path 1.2s cubic-bezier(.22,1,.36,1) ${delay}s`,
-                pointerEvents: 'none', zIndex: 2,
-            }} />
-        </div>
-    )
-}
+const SOCIAL = [
+    {
+        label: 'Instagram',
+        href: '#',
+        icon: (
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" />
+                <circle cx="12" cy="12" r="4" />
+                <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none" />
+            </svg>
+        ),
+    },
+    {
+        label: 'Facebook',
+        href: '#',
+        icon: (
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+            </svg>
+        ),
+    },
+    {
+        label: 'LinkedIn',
+        href: '#',
+        icon: (
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z" />
+                <rect x="2" y="9" width="4" height="12" />
+                <circle cx="4" cy="4" r="2" />
+            </svg>
+        ),
+    },
+    {
+        label: 'YouTube',
+        href: '#',
+        icon: (
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22.54 6.42A2.78 2.78 0 0 0 20.59 4.4C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-2.02A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z" />
+                <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" stroke="none" />
+            </svg>
+        ),
+    },
+]
 
 /* ─────────────────────────────────────────────
-   CARD IMAGE — lift + scale + explore label
+   BRAND LOGO MARK (SVG building icon)
 ───────────────────────────────────────────── */
-function CardImg({ src, color }) {
-    const [loaded, setLoaded] = useState(false)
-    const [hovered, setHovered] = useState(false)
-
-    return (
-        <div
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
-            style={{
-                overflow: 'hidden',
-                height: 'clamp(150px,18vw,220px)',
-                position: 'relative',
-                background: color,
-                transform: hovered ? 'translateY(-5px)' : 'translateY(0)',
-                transition: 'transform 0.4s cubic-bezier(.22,1,.36,1),box-shadow 0.4s',
-                boxShadow: hovered ? '0 22px 44px rgba(0,0,0,0.2)' : '0 4px 14px rgba(0,0,0,0.07)',
-            }}
-        >
-            {!loaded && (
-                <div style={{
-                    position: 'absolute', inset: 0,
-                    background: 'linear-gradient(90deg,#e8e4e0,#d8d2cc,#e8e4e0)',
-                    backgroundSize: '200%',
-                    animation: 'shimmer 1.4s infinite linear',
-                }} />
-            )}
-            <img src={src} alt="" onLoad={() => setLoaded(true)}
-                style={{
-                    width: '100%', height: '100%', objectFit: 'cover', display: 'block',
-                    transform: hovered ? 'scale(1.1)' : 'scale(1.02)',
-                    transition: 'transform 0.85s cubic-bezier(.22,1,.36,1),opacity 0.5s',
-                    opacity: loaded ? 1 : 0,
-                }}
-            />
-            <div style={{
-                position: 'absolute', inset: 0,
-                background: 'linear-gradient(0deg,rgba(0,0,0,0.55) 0%,transparent 55%)',
-                opacity: hovered ? 1 : 0.28,
-                transition: 'opacity 0.4s',
-            }} />
-            {hovered && (
-                <div style={{
-                    position: 'absolute', bottom: '0.9rem', left: '0.9rem', zIndex: 2,
-                    display: 'flex', alignItems: 'center', gap: '0.35rem',
-                    animation: 'fadeUpQ 0.35s cubic-bezier(.22,1,.36,1) forwards',
-                }}>
-                    <span style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic', fontSize: '0.78rem', color: '#fff', letterSpacing: '0.04em' }}>Explore</span>
-                    <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
-                        <path d="M3 7h8M8 4l3 3-3 3" stroke="#fff" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                </div>
-            )}
-        </div>
-    )
-}
-
-/* ─────────────────────────────────────────────
-   TEXT BLOCK — staggered children
-───────────────────────────────────────────── */
-function TextBlock({ label, heading, italic, body, btn, inView, style }) {
-    return (
-        <div className={`stagger-wrap ${inView ? 'revealed' : ''}`} style={style}>
-            {label && <p className="sc label-text">{label}</p>}
-            <h2 className="sc serif-head" style={{ fontStyle: italic ? 'italic' : 'normal' }}>{heading}</h2>
-            {body && <p className="sc body-text">{body}</p>}
-            {btn && <button className="sc know-btn">{btn}</button>}
-        </div>
-    )
-}
-
-const ArrowIcon = () => (
-    <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
-        <path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+const LogoMark = ({ size = 48 }) => (
+    <svg width={size} height={size} viewBox="0 0 48 60" fill="none">
+        <rect x="18" y="2" width="12" height="56" fill="url(#gold-vert)" rx="1" />
+        <rect x="8" y="14" width="8" height="44" fill="url(#gold-vert)" rx="1" opacity=".75" />
+        <rect x="32" y="14" width="8" height="44" fill="url(#gold-vert)" rx="1" opacity=".75" />
+        <rect x="1" y="28" width="6" height="30" fill="url(#gold-vert)" rx="1" opacity=".5" />
+        <rect x="41" y="28" width="6" height="30" fill="url(#gold-vert)" rx="1" opacity=".5" />
+        <rect x="0" y="57" width="48" height="2" fill="#c9974a" rx="1" />
+        <defs>
+            <linearGradient id="gold-vert" x1="0" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox">
+                <stop offset="0%" stopColor="#e8c98a" />
+                <stop offset="100%" stopColor="#9a6e30" />
+            </linearGradient>
+        </defs>
     </svg>
 )
 
 /* ─────────────────────────────────────────────
-   MAIN
+   FOOTER COMPONENT
 ───────────────────────────────────────────── */
-export default function Home() {
-    const videoRef = useRef(null)
-
-    const [promiseRef, promiseInView] = useInView()
-    const [purposeRef, purposeInView] = useInView()
-    const [devHeadRef, devHeadInView] = useInView()
-    const [hospRef, hospInView] = useInView()
-    const [footerRef, footerInView] = useInView()
-
-    const devInViews = [useInView(), useInView(), useInView(), useInView()]
+export default function Footer() {
+    const [rootRef, rootInView] = useInView()
+    const [linksRef, linksInView] = useInView()
+    const [botRef, botInView] = useInView()
+    const year = new Date().getFullYear()
 
     return (
-        <div style={{ background: '#faf9f7', color: '#1a1610', overflowX: 'hidden' }}>
-
+        <>
             <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap');
-        *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500&display=swap');
 
-        @keyframes shimmer   { to { background-position:-200% 0 } }
-        @keyframes heroUp    { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes fadeUpQ   { from{opacity:0;transform:translateY(8px)}  to{opacity:1;transform:translateY(0)} }
-        @keyframes bounce    { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(8px)} }
-        @keyframes lineSweep { from{transform:scaleX(0)} to{transform:scaleX(1)} }
-        @keyframes floatDot  { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-12px) scale(1.1)} }
-        @keyframes videoFade { from{opacity:0;transform:scale(1.06)} to{opacity:1;transform:scale(1)} }
+        /* ── Reset ── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        .hero-eyebrow { animation:heroUp 1.2s cubic-bezier(.22,1,.36,1) forwards 0.9s; opacity:0; }
-        .hero-text    { animation:heroUp 1.3s cubic-bezier(.22,1,.36,1) forwards 1.1s; opacity:0; }
-        .hero-line    { transformOrigin:left; animation:lineSweep 1s cubic-bezier(.22,1,.36,1) forwards 1.5s; transform:scaleX(0); }
-        video.hero-video { animation:videoFade 1.8s cubic-bezier(.22,1,.36,1) forwards; }
-
-        .stagger-wrap .sc { opacity:0; transform:translateY(24px); transition:opacity 0.85s cubic-bezier(.22,1,.36,1),transform 0.85s cubic-bezier(.22,1,.36,1); }
-        .stagger-wrap.revealed .sc { opacity:1; transform:translateY(0); }
-        .stagger-wrap.revealed .sc:nth-child(1){transition-delay:0.05s}
-        .stagger-wrap.revealed .sc:nth-child(2){transition-delay:0.18s}
-        .stagger-wrap.revealed .sc:nth-child(3){transition-delay:0.32s}
-        .stagger-wrap.revealed .sc:nth-child(4){transition-delay:0.48s}
-
-        .label-text{font-family:'DM Sans',sans-serif;font-size:0.6rem;letter-spacing:0.26em;text-transform:uppercase;color:#9a8a78;margin-bottom:0.65rem;}
-        .serif-head{font-family:'Cormorant Garamond',serif;font-size:clamp(1.55rem,2.8vw,2.35rem);font-weight:400;line-height:1.24;color:#1a1610;margin-bottom:0.9rem;}
-        .body-text {font-family:'DM Sans',sans-serif;font-size:0.8rem;color:#5a5550;line-height:1.9;max-width:340px;margin-bottom:1.6rem;}
-
-        .know-btn{display:inline-flex;align-items:center;gap:0.5rem;border:1px solid #9a8a78;color:#4a3f35;background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.68rem;letter-spacing:0.16em;text-transform:uppercase;padding:0.52rem 1.5rem;transition:background 0.35s,color 0.35s,box-shadow 0.35s;}
-        .know-btn:hover{background:#1a1610;color:#fff;box-shadow:0 8px 24px rgba(26,22,16,0.18);}
-        .know-btn svg{transition:transform 0.3s;}
-        .know-btn:hover svg{transform:translateX(4px);}
-
-        .fl{font-family:'DM Sans',sans-serif;font-size:0.74rem;color:rgba(255,255,255,0.52);display:block;margin-bottom:0.55rem;text-decoration:none;transition:color 0.2s,padding-left 0.2s;}
-        .fl:hover{color:#fff;padding-left:6px;}
-        .si{width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.6);text-decoration:none;transition:all 0.3s;}
-        .si:hover{background:#fff;color:#1a1610;transform:scale(1.1);}
-
-        .fade-up      {opacity:0;transform:translateY(36px);transition:opacity 0.9s cubic-bezier(.22,1,.36,1),transform 0.9s cubic-bezier(.22,1,.36,1);}
-        .fade-up.shown{opacity:1;transform:translateY(0);}
-        .scale-in      {opacity:0;transform:scale(0.9) translateY(20px);transition:opacity 0.9s cubic-bezier(.22,1,.36,1),transform 0.9s cubic-bezier(.22,1,.36,1);}
-        .scale-in.shown{opacity:1;transform:scale(1) translateY(0);}
-
-        @media(max-width:768px){
-          .two-col{grid-template-columns:1fr !important;}
-          .four-col{grid-template-columns:repeat(2,1fr) !important;}
-          .purpose-grid{grid-template-columns:1fr !important;}
-          .img-right-group{min-height:280px !important;}
-          .footer-grid{grid-template-columns:1fr 1fr !important;}
-          .footer-brand{grid-column:span 2 !important;align-items:flex-start !important;}
+        /* ── Variables ── */
+        :root {
+          --gold:     #c9974a;
+          --gold-lt:  #e8c98a;
+          --gold-dim: rgba(201,151,74,.15);
+          --ink:      #0d0b07;
+          --ink-2:    #161210;
+          --muted:    rgba(255,255,255,.38);
+          --muted-hv: rgba(255,255,255,.75);
+          --border:   rgba(201,151,74,.18);
         }
-        @media(max-width:480px){
-          .four-col{grid-template-columns:1fr !important;}
-          .footer-grid{grid-template-columns:1fr !important;}
-          .footer-brand{grid-column:span 1 !important;}
+
+        /* ── Footer shell ── */
+        .ubf-footer {
+          background: var(--ink);
+          position: relative;
+          overflow: hidden;
+          font-family: 'Outfit', sans-serif;
+        }
+
+        /* top glow pulse */
+        .ubf-footer::before {
+          content: '';
+          position: absolute;
+          top: -160px; left: 50%;
+          transform: translateX(-50%);
+          width: 700px; height: 360px;
+          background: radial-gradient(ellipse, rgba(201,151,74,.08) 0%, transparent 68%);
+          pointer-events: none;
+        }
+
+        /* subtle grain texture overlay */
+        .ubf-footer::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+          pointer-events: none;
+          z-index: 0;
+          opacity: .6;
+        }
+
+        .ubf-inner {
+          position: relative;
+          z-index: 1;
+          max-width: 1100px;
+          margin: 0 auto;
+          padding: 0 clamp(1.25rem, 6vw, 4rem);
+        }
+
+        /* ══ TOP GOLD LINE ══ */
+        .ubf-top-line {
+          height: 1px;
+          background: linear-gradient(90deg, transparent 0%, var(--gold) 40%, var(--gold) 60%, transparent 100%);
+          transform-origin: left;
+          transform: scaleX(0);
+          transition: transform 1.4s cubic-bezier(.22,1,.36,1);
+        }
+        .ubf-top-line.shown { transform: scaleX(1); }
+
+        /* ══ BRAND SECTION ══ */
+        .ubf-brand-section {
+          padding: clamp(3rem, 6vw, 5.5rem) 0 clamp(2.5rem, 5vw, 4rem);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          gap: 0;
+          opacity: 0;
+          transform: translateY(32px);
+          transition: opacity 1s cubic-bezier(.22,1,.36,1), transform 1s cubic-bezier(.22,1,.36,1);
+        }
+        .ubf-brand-section.shown { opacity: 1; transform: translateY(0); }
+
+        .ubf-logo-wrap {
+          margin-bottom: 1.5rem;
+          filter: drop-shadow(0 0 24px rgba(201,151,74,.2));
+        }
+
+        .ubf-wordmark {
+          font-family: 'Outfit', sans-serif;
+          font-size: clamp(1.6rem, 4vw, 2.8rem);
+          font-weight: 500;
+          letter-spacing: 0.28em;
+          text-transform: uppercase;
+          color: #fff;
+          line-height: 1;
+          margin-bottom: 0.45rem;
+        }
+        .ubf-wordmark span {
+          color: var(--gold);
+        }
+
+        .ubf-sub {
+          font-family: 'Cormorant Garamond', serif;
+          font-style: italic;
+          font-size: clamp(0.85rem, 1.6vw, 1.05rem);
+          color: rgba(255,255,255,.35);
+          letter-spacing: 0.06em;
+          margin-bottom: 1.8rem;
+        }
+
+        /* gold ornament divider */
+        .ubf-ornament {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          width: 100%;
+          max-width: 520px;
+          margin: 0 auto;
+        }
+        .ubf-ornament-line {
+          flex: 1;
+          height: 1px;
+          background: linear-gradient(90deg, transparent, var(--border));
+        }
+        .ubf-ornament-line.r {
+          background: linear-gradient(90deg, var(--border), transparent);
+        }
+        .ubf-ornament-diamond {
+          width: 7px; height: 7px;
+          background: var(--gold);
+          transform: rotate(45deg);
+          flex-shrink: 0;
+        }
+        .ubf-ornament-dot {
+          width: 3px; height: 3px;
+          background: rgba(201,151,74,.5);
+          transform: rotate(45deg);
+          flex-shrink: 0;
+        }
+
+        /* ══ NAV LINKS STRIP ══ */
+        .ubf-links-section {
+          padding: clamp(2rem, 4vw, 3rem) 0;
+          border-top: 1px solid rgba(255,255,255,.05);
+          border-bottom: 1px solid rgba(255,255,255,.05);
+        }
+
+        .ubf-links-grid {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: clamp(1.2rem, 4vw, 3.5rem);
+          opacity: 0;
+          transform: translateY(22px);
+          transition: opacity .9s cubic-bezier(.22,1,.36,1), transform .9s cubic-bezier(.22,1,.36,1);
+        }
+        .ubf-links-grid.shown { opacity: 1; transform: translateY(0); }
+
+        .ubf-nav-link {
+          font-family: 'Outfit', sans-serif;
+          font-size: clamp(0.65rem, 1.2vw, 0.72rem);
+          font-weight: 400;
+          letter-spacing: 0.22em;
+          text-transform: uppercase;
+          color: var(--muted);
+          text-decoration: none;
+          position: relative;
+          padding-bottom: 4px;
+          transition: color .3s ease;
+          white-space: nowrap;
+        }
+        .ubf-nav-link::after {
+          content: '';
+          position: absolute;
+          bottom: 0; left: 0;
+          width: 0; height: 1px;
+          background: var(--gold);
+          transition: width .4s cubic-bezier(.22,1,.36,1);
+        }
+        .ubf-nav-link:hover { color: var(--gold-lt); }
+        .ubf-nav-link:hover::after { width: 100%; }
+
+        /* separator dots between links */
+        .ubf-nav-sep {
+          color: rgba(201,151,74,.3);
+          font-size: 0.5rem;
+          display: flex;
+          align-items: center;
+          user-select: none;
+        }
+
+        /* ══ SOCIAL + CONTACT ROW ══ */
+        .ubf-bottom-section {
+          padding: clamp(1.8rem, 3.5vw, 2.8rem) 0 clamp(1.5rem, 3vw, 2.5rem);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          gap: 1.5rem;
+          opacity: 0;
+          transform: translateY(18px);
+          transition: opacity .85s cubic-bezier(.22,1,.36,1) .15s, transform .85s cubic-bezier(.22,1,.36,1) .15s;
+        }
+        .ubf-bottom-section.shown { opacity: 1; transform: translateY(0); }
+
+        /* contact pill */
+        .ubf-contact-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.7rem;
+          padding: 0.55rem 1.4rem 0.55rem 1rem;
+          border: 1px solid var(--border);
+          border-radius: 100px;
+          background: var(--gold-dim);
+          text-decoration: none;
+          transition: background .3s, border-color .3s, transform .3s;
+        }
+        .ubf-contact-pill:hover {
+          background: rgba(201,151,74,.25);
+          border-color: rgba(201,151,74,.4);
+          transform: translateY(-2px);
+        }
+        .ubf-contact-pill-dot {
+          width: 7px; height: 7px; border-radius: 50%;
+          background: var(--gold);
+          animation: ubf-pulse 2.2s ease infinite;
+          flex-shrink: 0;
+        }
+        @keyframes ubf-pulse {
+          0%,100% { opacity:1; box-shadow:0 0 0 0 rgba(201,151,74,.5); }
+          50%      { opacity:.7; box-shadow:0 0 0 5px rgba(201,151,74,0); }
+        }
+        .ubf-contact-pill-text {
+          font-size: 0.7rem;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: var(--gold-lt);
+          font-weight: 400;
+        }
+
+        /* social icons */
+        .ubf-socials {
+          display: flex;
+          gap: 0.65rem;
+        }
+        .ubf-social-btn {
+          width: 36px; height: 36px;
+          border-radius: 50%;
+          border: 1px solid rgba(255,255,255,.12);
+          background: transparent;
+          color: rgba(255,255,255,.45);
+          display: flex; align-items: center; justify-content: center;
+          text-decoration: none;
+          transition: all .32s cubic-bezier(.22,1,.36,1);
+          cursor: pointer;
+        }
+        .ubf-social-btn:hover {
+          background: var(--gold);
+          border-color: var(--gold);
+          color: var(--ink);
+          transform: translateY(-3px) scale(1.08);
+          box-shadow: 0 8px 20px rgba(201,151,74,.28);
+        }
+
+        /* ══ COPYRIGHT BAR ══ */
+        .ubf-copy-bar {
+          border-top: 1px solid rgba(255,255,255,.06);
+          padding: 1.1rem 0;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          gap: 0.6rem;
+        }
+        .ubf-copy-text {
+          font-size: 0.62rem;
+          letter-spacing: 0.08em;
+          color: rgba(255,255,255,.22);
+          text-transform: uppercase;
+        }
+        .ubf-copy-text a {
+          color: rgba(201,151,74,.45);
+          text-decoration: none;
+          transition: color .2s;
+        }
+        .ubf-copy-text a:hover { color: var(--gold); }
+
+        .ubf-rera {
+          font-family: 'Cormorant Garamond', serif;
+          font-style: italic;
+          font-size: 0.7rem;
+          color: rgba(255,255,255,.18);
+          letter-spacing: 0.04em;
+        }
+
+        /* ══ RERA / LEGAL STRIP ══ */
+        .ubf-legal-strip {
+          background: rgba(0,0,0,.35);
+          border-top: 1px solid rgba(255,255,255,.04);
+          padding: 0.85rem 0;
+          text-align: center;
+        }
+        .ubf-legal-text {
+          font-size: 0.58rem;
+          color: rgba(255,255,255,.18);
+          line-height: 1.8;
+          letter-spacing: 0.04em;
+          max-width: 860px;
+          margin: 0 auto;
+        }
+
+        /* ══ RESPONSIVE ══ */
+        @media (max-width: 640px) {
+          .ubf-nav-sep { display: none; }
+          .ubf-links-grid { gap: 1rem 2rem; }
+          .ubf-bottom-section {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+          }
+          .ubf-copy-bar {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+          }
+        }
+
+        @media (max-width: 420px) {
+          .ubf-wordmark { letter-spacing: 0.16em; }
+          .ubf-links-grid { gap: 0.9rem 1.6rem; }
         }
       `}</style>
 
-            {/* ═══ §6 FOOTER ═══ */}
-            <footer style={{ background: '#1a1610', padding: 'clamp(2.5rem,5vw,4.5rem) clamp(1.5rem,7vw,5.5rem) 1.5rem' }}>
-                <div ref={footerRef} className={`footer-grid fade-up ${footerInView ? 'shown' : ''}`}
-                    style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'clamp(1.5rem,4vw,3rem)', maxWidth: 1080, margin: '0 auto 3rem' }}>
-                    <div>{footerLeft.map(l => <a key={l} href="#" className="fl">{l}</a>)}</div>
-                    <div>{footerRight.map(l => <a key={l} href="#" className="fl">{l}</a>)}</div>
-                    <div className="footer-brand" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-                        <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '1.6rem', fontWeight: 500, letterSpacing: '0.32em', color: '#fff', textTransform: 'uppercase' }}>{BRAND}</p>
-                        <p style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic', fontSize: '0.82rem', color: 'rgba(255,255,255,0.4)', marginTop: '0.5rem', textAlign: 'right' }}>Crafting life's finest moments.</p>
-                        <div style={{ display: 'flex', gap: '0.7rem', marginTop: '1.5rem' }}>
-                            <a href="#" className="si"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" /></svg></a>
-                            <a href="#" className="si"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg></a>
-                            <a href="#" className="si"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z" /><rect x="2" y="9" width="4" height="12" /><circle cx="4" cy="4" r="2" /></svg></a>
+            <footer className="ubf-footer">
+
+                {/* ── TOP GOLD ACCENT LINE ── */}
+                <div className="ubf-inner">
+                    <div
+                        className={`ubf-top-line ${rootInView ? 'shown' : ''}`}
+                        ref={rootRef}
+                    />
+                </div>
+
+                {/* ── BRAND SECTION ── */}
+                <div className="ubf-inner">
+                    <div className={`ubf-brand-section ${rootInView ? 'shown' : ''}`}>
+
+                        <div className="ubf-logo-wrap">
+                            <LogoMark size={52} />
+                        </div>
+
+                        <p className="ubf-wordmark">
+                            <span>Unique</span> Builders &amp; Developers
+                        </p>
+                        <p className="ubf-sub">Every Brick Lead To Your Dream</p>
+
+                        {/* ornament divider */}
+                        <div className="ubf-ornament">
+                            <div className="ubf-ornament-line" />
+                            <div className="ubf-ornament-dot" />
+                            <div className="ubf-ornament-diamond" />
+                            <div className="ubf-ornament-dot" />
+                            <div className="ubf-ornament-line r" />
                         </div>
                     </div>
                 </div>
-                <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1.2rem', maxWidth: 1080, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
-                    <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.65rem', color: 'rgba(255,255,255,0.3)' }}>© {BRAND} Group 2026. All Rights Reserved.</p>
-                    <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: '0.65rem', color: 'rgba(255,255,255,0.2)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Privacy · Terms</p>
+
+                {/* ── NAV LINKS ── */}
+                <div className="ubf-links-section">
+                    <div className="ubf-inner">
+                        <nav
+                            ref={linksRef}
+                            className={`ubf-links-grid ${linksInView ? 'shown' : ''}`}
+                            aria-label="Footer navigation"
+                        >
+                            {NAV_LINKS.map((link, i) => (
+                                <React.Fragment key={link.label}>
+                                    <a href={link.href} className="ubf-nav-link">{link.label}</a>
+                                    {i < NAV_LINKS.length - 1 && (
+                                        <span className="ubf-nav-sep" aria-hidden="true">◆</span>
+                                    )}
+                                </React.Fragment>
+                            ))}
+                        </nav>
+                    </div>
                 </div>
+
+                {/* ── SOCIAL + CONTACT ── */}
+                <div className="ubf-inner">
+                    <div
+                        ref={botRef}
+                        className={`ubf-bottom-section ${botInView ? 'shown' : ''}`}
+                    >
+                        {/* contact pill */}
+                        <a href="/enquiry" className="ubf-contact-pill">
+                            <span className="ubf-contact-pill-dot" />
+                            <span className="ubf-contact-pill-text">Contact Us</span>
+                        </a>
+
+                        {/* social row */}
+                        <div className="ubf-socials">
+                            {SOCIAL.map(s => (
+                                <a
+                                    key={s.label}
+                                    href={s.href}
+                                    className="ubf-social-btn"
+                                    aria-label={s.label}
+                                    title={s.label}
+                                >
+                                    {s.icon}
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* ── COPYRIGHT ── */}
+                    <div className="ubf-copy-bar">
+                        <p className="ubf-copy-text">
+                            © {year} Unique Builders &amp; Developers. All Rights Reserved.
+                            {' '}·{' '}
+                            <a href="#">Privacy Policy</a>
+                            {' '}·{' '}
+                            <a href="#">Terms &amp; Conditions</a>
+                            {' '}·{' '}
+                            <a href="#">Disclaimer</a>
+                        </p>
+                        <p className="ubf-rera">MahaRERA Registered</p>
+                    </div>
+                </div>
+
+                {/* ── LEGAL FINE PRINT ── */}
+                <div className="ubf-legal-strip">
+                    <div className="ubf-inner">
+                        <p className="ubf-legal-text">
+                            The content on this website is for informational purposes only and does not constitute an offer or contract.
+                            All images, specifications, and details are indicative and subject to change without prior notice.
+                            Buyers are advised to verify all information independently before making any purchase decisions.
+                        </p>
+                    </div>
+                </div>
+
             </footer>
-        </div>
+        </>
     )
 }
