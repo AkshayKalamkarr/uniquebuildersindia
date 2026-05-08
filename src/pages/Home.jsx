@@ -976,7 +976,7 @@ export default function Home() {
                                 </div>
                             </div>
                             <div style={{ position: 'relative', overflow: 'hidden', flex: 1 }}>
-                                <FancyImg src="https://picsum.photos/seed/garden-arch/600/500" revealIn={purposeInView} delay={0.4} style={{ height: '100%', minHeight: 120 }} />
+                                <FancyImg src="/images/homepage/fifth.jpg" revealIn={purposeInView} delay={0.4} style={{ height: '100%', minHeight: 120 }} />
                             </div>
                         </div>
                     </div>
