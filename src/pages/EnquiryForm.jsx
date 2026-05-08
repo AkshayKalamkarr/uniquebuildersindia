@@ -28,7 +28,7 @@ const GlobalStyle = () => (
     ═══════════════════════════════════════ */
     .page-shell {
       min-height: 100vh;
-      background-image: url('https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?w=1800&q=80&auto=format&fit=crop');
+      background-image: url('/images/homepage/enquiryBg.jpg');
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
@@ -581,15 +581,15 @@ const GlobalStyle = () => (
 /* ── Particles generator ── */
 const Particles = () => {
   const positions = [
-    { left: '12%', animationDelay: '0s',   animationDuration: '5.5s' },
+    { left: '12%', animationDelay: '0s', animationDuration: '5.5s' },
     { left: '28%', animationDelay: '1.2s', animationDuration: '6.8s' },
-    { left: '44%', animationDelay: '0.5s', animationDuration: '5s'   },
-    { left: '60%', animationDelay: '2s',   animationDuration: '7.2s' },
-    { left: '76%', animationDelay: '0.8s', animationDuration: '6s'   },
+    { left: '44%', animationDelay: '0.5s', animationDuration: '5s' },
+    { left: '60%', animationDelay: '2s', animationDuration: '7.2s' },
+    { left: '76%', animationDelay: '0.8s', animationDuration: '6s' },
     { left: '90%', animationDelay: '1.6s', animationDuration: '5.8s' },
-    { left: '20%', animationDelay: '3s',   animationDuration: '6.5s' },
-    { left: '52%', animationDelay: '2.4s', animationDuration: '7s'   },
-    { left: '82%', animationDelay: '1s',   animationDuration: '5.3s' },
+    { left: '20%', animationDelay: '3s', animationDuration: '6.5s' },
+    { left: '52%', animationDelay: '2.4s', animationDuration: '7s' },
+    { left: '82%', animationDelay: '1s', animationDuration: '5.3s' },
   ];
   return (
     <div className="particles">
