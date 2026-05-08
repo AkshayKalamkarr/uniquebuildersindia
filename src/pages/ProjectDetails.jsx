@@ -389,7 +389,7 @@ const ProjectDetails = () => {
       `}</style>
 
             {/* ════════ HERO ════════ */}
-            <section className="relative h-screen min-h-[600px] overflow-hidden bg-[#f5f2ed]">
+            <section className="relative h-screen min-h-150 overflow-hidden bg-[#f5f2ed]">
 
                 {/* Portrait image — right side */}
                 <div className="hero-portrait-slide">
@@ -446,7 +446,7 @@ const ProjectDetails = () => {
                         <div className={`flex items-center gap-2.5 transition-all duration-700 delay-400 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
                             {project.images.map((_, i) => (
                                 <button key={i} onClick={() => setActiveImage(i)}
-                                    className={`transition-all duration-300 rounded-full ${i === activeImage ? "w-8 h-[3px] bg-[#b8924a]" : "w-[3px] h-[3px] bg-[#1a1a1a]/18 hover:bg-[#b8924a]/45"}`}
+                                    className={`transition-all duration-300 rounded-full ${i === activeImage ? "w-8 h-075 bg-[#b8924a]" : "w-0.75 h-0.75 bg-[#1a1a1a]/18 hover:bg-[#b8924a]/45"}`}
                                 />
                             ))}
                         </div>
@@ -455,7 +455,7 @@ const ProjectDetails = () => {
 
                 {/* Scroll cue */}
                 <div className={`scroll-float absolute bottom-8 left-1/2 -translate-x-1/2 z-20 hidden sm:flex flex-col items-center gap-3 transition-all duration-700 delay-600 ${isLoaded ? "opacity-100" : "opacity-0"}`}>
-                    <div className="w-px h-12 bg-gradient-to-b from-transparent to-[#b8924a]/35" />
+                    <div className="w-px h-12 bg-linear-to-b from-transparent to-[#b8924a]/35" />
                     <span className="text-[#b8924a]/55 text-[8px] tracking-[0.5em] uppercase">Explore</span>
                 </div>
             </section>
@@ -500,7 +500,7 @@ const ProjectDetails = () => {
             <section ref={(el) => addRef(el, 1)} data-section="images"
                 className="px-4 sm:px-6 md:px-10 lg:px-14 py-12 sm:py-16 bg-[#f7f5f1]"
             >
-                <div className="max-w-[1400px] mx-auto flex flex-col gap-8 sm:gap-10">
+                <div className="max-w-350 mx-auto flex flex-col gap-8 sm:gap-10">
 
                     {/* Heading */}
                     <div className={`flex items-end justify-between px-1 reveal ${visibleSections.has("images") ? "visible" : ""}`}>
@@ -562,7 +562,7 @@ const ProjectDetails = () => {
                         {project.images.map((img, i) => (
                             <button key={i}
                                 onClick={() => setLightbox({ type: "image", src: img })}
-                                className={`relative flex-shrink-0 img-card transition-all duration-300 ${i === 0 ? "ring-1 ring-[#b8924a]" : "opacity-40 hover:opacity-80"}`}
+                                className={`relative shrink-0 img-card transition-all duration-300 ${i === 0 ? "ring-1 ring-[#b8924a]" : "opacity-40 hover:opacity-80"}`}
                                 style={{ width: 50, height: 70, borderRadius: 2 }}
                             >
                                 <img src={img} alt="" />
@@ -578,7 +578,7 @@ const ProjectDetails = () => {
             <section ref={(el) => addRef(el, 2)} data-section="videos"
                 className="px-4 sm:px-6 md:px-10 lg:px-14 py-12 sm:py-16 bg-white"
             >
-                <div className="max-w-[1400px] mx-auto flex flex-col gap-8 sm:gap-10">
+                <div className="max-w-350 mx-auto flex flex-col gap-8 sm:gap-10">
 
                     {/* Heading */}
                     <div className={`flex items-end justify-between px-1 reveal ${visibleSections.has("videos") ? "visible" : ""}`}>
@@ -650,7 +650,7 @@ const ProjectDetails = () => {
                     data-section="map"
                     className="px-4 sm:px-6 md:px-10 lg:px-14 py-12 sm:py-16 md:py-20 bg-[#f7f5f1]"
                 >
-                    <div className="max-w-[1400px] mx-auto flex flex-col gap-8 sm:gap-10">
+                    <div className="max-w-350 mx-auto flex flex-col gap-8 sm:gap-10">
 
                         {/* ── Section heading ── */}
                         <div className={`flex items-end justify-between px-1 reveal ${visibleSections.has("map") ? "visible" : ""}`}>
@@ -753,7 +753,7 @@ const ProjectDetails = () => {
                                 <div className="map-info-card p-5 sm:p-6">
                                     <div className="flex items-start gap-4">
                                         {/* Animated pin icon */}
-                                        <div className="flex-shrink-0 mt-1">
+                                        <div className="shrink-0 mt-1">
                                             <svg
                                                 className="map-pin-glow w-6 h-6"
                                                 viewBox="0 0 24 24"
