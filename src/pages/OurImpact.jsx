@@ -201,30 +201,6 @@ const PARTNERSHIPS = [
 ]
 
 
-const BLOGS = [
-    {
-        img: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=700&q=80",
-        tag: "Sustainability",
-        title: "At Unique Builders & Developers, sustainability is an evolving commitment. We focus on creating developments that are efficient, future-ready, and mindful of long-term impact.",
-        // author: "Dr. Prasad Manepalli, Unique Builders & Developers",
-        date: "April 2025",
-    },
-    {
-        img: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=700&q=80",
-        tag: "Environment",
-        title: "We aim to reduce environmental impact by adopting conscious planning and construction methods.",
-        // author: "Unique Sustainability Team",
-        date: "March 2025",
-    },
-    {
-        img: "https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=700&q=80",
-        tag: "Social",
-        title: "We believe real estate should enhance the lives of people—not just provide structures.",
-        // author: "Unique Foundation",
-        date: "February 2025",
-    },
-];
-
 // ── Reusable container ─────────────────────────────────────────────────────
 function Container({ children, className = "" }) {
     return (
@@ -557,89 +533,6 @@ function Partnerships() {
     );
 }
 
-
-// ── BLOGS ─────────────────────────────────────────────────────────────────
-function Blogs() {
-    return (
-        <section id="blogs" style={{ width: "100%", background: "#fafaf9", padding: "5rem 0" }}>
-            <Container>
-                <Reveal>
-                    <div style={{ textAlign: "center", maxWidth: "480px", marginLeft: "auto", marginRight: "auto", marginBottom: "3.5rem" }}>
-                        <SectionLabel>Insights</SectionLabel>
-                        <SectionHeading>Blogs</SectionHeading>
-                    </div>
-                </Reveal>
-                <div
-                    style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-                        gap: "2rem",
-                        width: "100%",
-                    }}
-                >
-                    {BLOGS.map((b, i) => (
-                        <Reveal key={i} delay={i * 120}>
-                            <div
-                                style={{ cursor: "pointer" }}
-                                onMouseEnter={e => {
-                                    e.currentTarget.querySelector("h3").style.color = "#047857";
-                                    e.currentTarget.querySelector("img").style.transform = "scale(1.06)";
-                                }}
-                                onMouseLeave={e => {
-                                    e.currentTarget.querySelector("h3").style.color = "#1c1917";
-                                    e.currentTarget.querySelector("img").style.transform = "scale(1)";
-                                }}
-                            >
-                                <div style={{ borderRadius: "1rem", overflow: "hidden", aspectRatio: "4/3", marginBottom: "1rem" }}>
-                                    <img
-                                        src={b.img}
-                                        alt={b.title}
-                                        style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.7s ease", display: "block" }}
-                                    />
-                                </div>
-                                <span
-                                    style={{
-                                        display: "block", fontSize: "10px", letterSpacing: "0.15em",
-                                        textTransform: "uppercase", fontWeight: 700, color: "#059669",
-                                        marginBottom: "0.5rem",
-                                    }}
-                                >
-                                    {b.tag}
-                                </span>
-                                <h3
-                                    className="font-display"
-                                    style={{ fontSize: "1.15rem", color: "#1c1917", lineHeight: 1.4, marginBottom: "0.5rem", transition: "color 0.3s" }}
-                                >
-                                    {b.title}
-                                </h3>
-                                <p style={{ color: "#a8a29e", fontSize: "0.75rem" }}>By {b.author} · {b.date}</p>
-                            </div>
-                        </Reveal>
-                    ))}
-                </div>
-                <Reveal>
-                    <div style={{ textAlign: "center", marginTop: "3rem" }}>
-                        <a
-                            href="#"
-                            style={{
-                                display: "inline-flex", alignItems: "center", gap: "0.5rem",
-                                border: "1px solid #d6d3d1", color: "#57534e",
-                                padding: "0.75rem 1.75rem", borderRadius: "9999px",
-                                fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase",
-                                fontWeight: 600, textDecoration: "none",
-                                transition: "all 0.3s ease",
-                            }}
-                            onMouseEnter={e => { e.currentTarget.style.borderColor = "#059669"; e.currentTarget.style.color = "#047857"; }}
-                            onMouseLeave={e => { e.currentTarget.style.borderColor = "#d6d3d1"; e.currentTarget.style.color = "#57534e"; }}
-                        >
-                            View All Articles
-                        </a>
-                    </div>
-                </Reveal>
-            </Container>
-        </section>
-    );
-}
 
 // ── FOOTER CTA ────────────────────────────────────────────────────────────
 function FooterCTA() {
