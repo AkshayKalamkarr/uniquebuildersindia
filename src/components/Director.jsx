@@ -481,8 +481,6 @@ export default function Director() {
             <section className="ds">
                 {[
                     { val: "20+", lbl: "Years of\nExperience" },
-                    { val: "₹50Cr+", lbl: "Net Worth\nAchieved" },
-                    { val: "₹100Cr", lbl: "Annual Revenue\nRange" },
                     { val: "3", lbl: "Academic\nDegrees" },
                 ].map(({ val, lbl }) => (
                     <FadeIn key={lbl}>
