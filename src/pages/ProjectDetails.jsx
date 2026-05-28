@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { projects } from "../data/projects";
 import { useState, useEffect, useRef } from "react";
 
+
 const ProjectDetails = () => {
     const { slug } = useParams();
     const navigate = useNavigate();
