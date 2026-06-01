@@ -28,7 +28,6 @@ function App() {
         <Route path="/enquiry" element={<EnquiryForm />} />
         <Route path="/navi-mumbai" element={<NaviMumbai />} />
       </Routes>
-
       {/* ✅ FOOTER */}
       <Footer />
     </Router>
