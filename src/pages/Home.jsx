@@ -5,7 +5,7 @@ import Navbar from '../components/Navbar'
 /* ─────────────────────────────────────────────
    CONFIG
 ───────────────────────────────────────────── */
-const BRAND = 'Unique builders & developers'
+const BRAND = 'Unique Builders & Developers'
 
 const developments = [
   { id: 1, name: 'New City Palace', location: 'Pushpak Nagar', img: '/images/newcitypalace413/1.jpeg', color: '#2c3e50', slug: 'project-1', soldOut: 72 },
