@@ -757,6 +757,7 @@ export default function Home() {
         </div>
       </section>
 
+
       {/* ═══ §4 OUR PRESENCE — SOLD-OUT CARDS ═══ */}
       <section style={{ background: '#f2ede8', padding: 'clamp(3.5rem,7vw,5.5rem) clamp(1.5rem,7vw,5.5rem)' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
