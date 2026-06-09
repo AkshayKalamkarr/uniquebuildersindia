@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar'
 /* ─────────────────────────────────────────────
    CONFIG
 ───────────────────────────────────────────── */
+
 const BRAND = 'Unique Builders & Developers'
 
 const developments = [
