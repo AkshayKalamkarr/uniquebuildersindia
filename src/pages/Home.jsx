@@ -21,6 +21,7 @@ const developments = [
 const footerLeft = ['Our Story', 'Our Impact', 'Our Developments', 'Experiences', 'Signature Hospitality', 'Press Room', 'Awards', 'Blogs']
 const footerRight = ['NRI', 'Investor Relations', 'Careers', 'Terms & Conditions', 'Disclaimer', 'Contact Us', 'SMART ODR']
 
+
 /* ─────────────────────────────────────────────
    GLOBAL SCROLL MANAGER
    Single rAF loop instead of one per component
