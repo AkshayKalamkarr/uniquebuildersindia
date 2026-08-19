@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 /* ─────────────────────────────────────────────
    CONFIG — update these values as needed
 ───────────────────────────────────────────── */
-const WHATSAPP_NUMBER = "919076326232";
+const WHATSAPP_NUMBER = "917021002947";
 const WHATSAPP_MESSAGE = "Hello! I'm interested in your properties. Please share more details.";
 
 const residentialProjects = [
